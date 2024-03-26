@@ -16,7 +16,7 @@ module DVLA
       #
       # @example Driver with additional arguments
       #   DVLA::Browser::Drivers.chrome(remote: 'http://localhost:4444/wd/hub')
-      def self.method_missing(method, *args, **kwargs, &)
+      def self.method_missing(method, *args, **kwargs, &block)
         if (matches = method.match(DRIVER_REGEX))
           headless = matches[:headless].is_a? String
           browser = matches[:browser].to_sym
@@ -73,7 +73,7 @@ module DVLA
           Capybara.default_driver = method
           Capybara.current_driver = method
         else
-          super.method_missing(method, *args, &)
+          super.method_missing(method, *args, &block)
         end
       end
 
