@@ -1,0 +1,12 @@
+inherit_gem:
+  dvla-lint: '.rubocop.yml'
+
+AllCops:
+  TargetRubyVersion: 3.2
+  SuggestExtensions: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Style/ArgumentsForwarding:
+  Enabled: false
