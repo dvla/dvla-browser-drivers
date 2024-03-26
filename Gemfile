@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-source 'https://gemstash.tooling.dvla.gov.uk'
+source 'https://rubygems.org'
 
 # Specify your gem's dependencies in dvla-browser-drivers.gemspec
 gemspec

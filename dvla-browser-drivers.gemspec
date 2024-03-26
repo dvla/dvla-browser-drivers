@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
                      'It also has the facility to run Cuprite, which is a pure Ruby driver utilising Ferrum, '        \
                      'a high level API to run headless tests.'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.0'
+  spec.required_ruby_version = '>= 3.1'
   spec.homepage = 'https://github.com/dvla/dvla-browser-drivers'
   if spec.respond_to?(:metadata)
     # spec.metadata['allowed_push_host'] = 'TODO: Set to 'http://mygemserver.com''
