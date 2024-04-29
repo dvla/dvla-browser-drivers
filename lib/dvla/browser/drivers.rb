@@ -9,10 +9,9 @@ require 'selenium-webdriver'
 module DVLA
   class Error < StandardError; end
 
-  DVLA::Herodotus.configure do |config|
-    config.system_name = 'browser-drivers'
-    config.pid = true
+  config = DVLA::Herodotus.config do |config|
+    config.main = true
   end
-
-  LOG = DVLA::Herodotus.logger
+  
+  main_logger = DVLA::Herodotus.logger('browser-drivers', config: config)
 end
