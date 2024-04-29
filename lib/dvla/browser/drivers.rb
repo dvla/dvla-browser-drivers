@@ -9,5 +9,5 @@ require 'selenium-webdriver'
 module DVLA
   class Error < StandardError; end
   
-  main_logger = DVLA::Herodotus.logger('browser-drivers')
+  LOG = DVLA::Herodotus.logger('browser-drivers')
 end
