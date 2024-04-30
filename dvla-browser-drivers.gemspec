@@ -47,7 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'apparition', '>= 0.6'
   spec.add_runtime_dependency 'capybara', '>= 3.37'
   spec.add_runtime_dependency 'cuprite', '>= 0.14'
-  spec.add_runtime_dependency 'dvla-herodotus', '>= 1.0'
+  spec.add_runtime_dependency 'dvla-herodotus', '>= 2.0'
   spec.add_runtime_dependency 'selenium-webdriver', '>= 4.0'
 
   spec.add_development_dependency 'bundler-audit', '~> 0.9'
