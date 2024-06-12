@@ -27,7 +27,7 @@ module DVLA
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" } unless SELENIUM_ACCEPTED_PARAMS.include?(key)
             end
 
-            Capybara.register_driver method do |app|
+            ::Capybara.register_driver method do |app|
               options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new
               options.add_argument('--disable-dev-shm-usage')
 
@@ -52,14 +52,14 @@ module DVLA
                 end
               end
 
-              Capybara::Selenium::Driver.new(app, url: kwargs[:remote], browser:, options:)
+              ::Capybara::Selenium::Driver.new(app, url: kwargs[:remote], browser:, options:)
             end
           else
             kwargs.each do |key, _value|
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{OTHER_ACCEPTED_PARAMS}'" } unless OTHER_ACCEPTED_PARAMS.include?(key)
             end
 
-            Capybara.register_driver method do |app|
+            ::Capybara.register_driver method do |app|
               Object.const_get("Capybara::#{browser.to_s.capitalize}::Driver").new(
                 app,
                 headless:,
@@ -70,8 +70,8 @@ module DVLA
           end
 
           LOG.info("Driver set to: '#{method}'")
-          Capybara.default_driver = method
-          Capybara.current_driver = method
+          ::Capybara.default_driver = method
+          ::Capybara.current_driver = method
         else
           super.method_missing(method, *args, &block)
         end
