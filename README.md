@@ -25,19 +25,19 @@ Once installed, you are able to use any pre-configured browser driver from the l
 
 ### Selenium drivers
 
-| Driver           | Usage                                     |
-| ---------------- | ----------------------------------------- |
-| chrome           | `DVLA::Browser::Drivers.chrome`           |
-| headless_chrome  | `DVLA::Browser::Drivers.headless_chrome`  |
-| edge             | `DVLA::Browser::Drivers.edge`             |
-| headless_edge    | `DVLA::Browser::Drivers.headless_edge`    |
-| firefox          | `DVLA::Browser::Drivers.firefox`          |
-| headless_firefox | `DVLA::Browser::Drivers.headless_firefox` |
+| Driver                    | Usage                                              |
+|---------------------------|----------------------------------------------------|
+| selenium_chrome           | `DVLA::Browser::Drivers.selenium_chrome`           |
+| headless_selenium_chrome  | `DVLA::Browser::Drivers.headless_selenium_chrome`  |
+| selenium_edge             | `DVLA::Browser::Drivers.selenium_edge`             |
+| headless_selenium_edge    | `DVLA::Browser::Drivers.headless_selenium_edge`    |
+| selenium_firefox          | `DVLA::Browser::Drivers.selenium_firefox`          |
+| headless_selenium_firefox | `DVLA::Browser::Drivers.headless_selenium_firefox` |
 
 ### Non-selenium drivers
 
 | Driver              | Usage                                        |
-| ------------------- | -------------------------------------------- |
+|---------------------|----------------------------------------------|
 | cuprite             | `DVLA::Browser::Drivers.cuprite`             |
 | headless_cuprite    | `DVLA::Browser::Drivers.headless_cuprite`    |
 | apparition          | `DVLA::Browser::Drivers.apparition`          |
@@ -47,22 +47,22 @@ Once installed, you are able to use any pre-configured browser driver from the l
 
 ### Default configuration
 
-| Driver                | Configuration                                         |
-| --------------------- | ----------------------------------------------------- |
-| chrome, edge, firefox | --disable-dev-shm-usage<br/>                          |
-| headless\_<driver>    | --headless<br/>--no-sandbox                           |
-| cuprite, apparition   | { 'no-sandbox': nil, disable-smooth-scrolling: true } |
+| Driver                                           | Configuration                                         |
+|--------------------------------------------------|-------------------------------------------------------|
+| selenium_chrome, selenium_edge, selenium_firefox | --disable-dev-shm-usage<br/>                          |
+| headless\_<driver>                               | --headless<br/>--no-sandbox                           |
+| cuprite, apparition                              | { 'no-sandbox': nil, disable-smooth-scrolling: true } |
 
 ---
 
 ### Additional configuration
 
 | Option                                                                      | Description                                                                                                                                                                        | supported-browsers    |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
 | remote: 'http://localhost:4444/wd/hub'                                      | Allows you to talk to a remote browser                                                                                                                                             | firefox               |
-| additional_options: ['window-size=1400,1920']                               | Pass additional options to the driver<br/>Supported switches: https://peter.sh/experiments/chromium-command-line-switches/                                                         | chrome, edge, firefox |
+| additional_arguments: ['window-size=1400,1920']                             | Pass additional arguments to the driver<br/>Supported switches: https://peter.sh/experiments/chromium-command-line-switches/                                                       | chrome, edge, firefox |
 | additional_preferences: [{'download.default_directory': '<download_path>'}] | Pass additional preferences to the driver<br/>Documentation: https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_preference-instance_method | chrome, edge, firefox |
-| additional_options: { 'option': value, 'option': value }                    | Pass additional options to the driver<br/>Supported switched: https://www.rubydoc.info/gems/cuprite/                                                                               | cuprite, apparition   |
+| additional_arguments: { 'option': value, 'option': value }                  | Pass additional arguments to the driver<br/>Supported switched: https://www.rubydoc.info/gems/cuprite/                                                                             | cuprite, apparition   |
 
 ## Development
 
