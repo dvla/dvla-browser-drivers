@@ -4,18 +4,18 @@ RSpec.describe DVLA::Browser::Drivers do
   end
 
   it 'can create a chrome driver' do
-    DVLA::Browser::Drivers.chrome
-    expect(Capybara.current_driver).to eq(:chrome)
+    DVLA::Browser::Drivers.selenium_chrome
+    expect(Capybara.current_driver).to eq(:selenium_chrome)
   end
 
   it 'can create a firefox driver' do
-    DVLA::Browser::Drivers.firefox
-    expect(Capybara.current_driver).to eq(:firefox)
+    DVLA::Browser::Drivers.selenium_firefox
+    expect(Capybara.current_driver).to eq(:selenium_firefox)
   end
 
   it 'can create an edge driver' do
-    DVLA::Browser::Drivers.edge
-    expect(Capybara.current_driver).to eq(:edge)
+    DVLA::Browser::Drivers.selenium_edge
+    expect(Capybara.current_driver).to eq(:selenium_edge)
   end
 
   it 'can create a cuprite driver' do
@@ -29,8 +29,8 @@ RSpec.describe DVLA::Browser::Drivers do
   end
 
   it 'can create a headless chrome driver with standard options' do
-    DVLA::Browser::Drivers.headless_chrome
-    expect(Capybara.current_driver).to eq(:headless_chrome)
+    DVLA::Browser::Drivers.headless_selenium_chrome
+    expect(Capybara.current_driver).to eq(:headless_selenium_chrome)
 
     args = Capybara.current_session.driver.options[:options].options[:args]
 
@@ -40,13 +40,13 @@ RSpec.describe DVLA::Browser::Drivers do
   end
 
   it 'can create a headless firefox driver' do
-    DVLA::Browser::Drivers.headless_firefox
-    expect(Capybara.current_driver).to eq(:headless_firefox)
+    DVLA::Browser::Drivers.headless_selenium_firefox
+    expect(Capybara.current_driver).to eq(:headless_selenium_firefox)
   end
 
   it 'can create a headless edge driver' do
-    DVLA::Browser::Drivers.headless_edge
-    expect(Capybara.current_driver).to eq(:headless_edge)
+    DVLA::Browser::Drivers.headless_selenium_edge
+    expect(Capybara.current_driver).to eq(:headless_selenium_edge)
   end
 
   it 'can create a headless apparition driver' do
@@ -66,12 +66,15 @@ RSpec.describe DVLA::Browser::Drivers do
   end
 
   it 'allows additional args to be passed' do
-    DVLA::Browser::Drivers.chrome(remote: 'hello_world')
+    DVLA::Browser::Drivers.selenium_chrome(remote: 'hello_world')
     expect(Capybara.current_session.driver.options[:url]).to eq('hello_world')
     expect(Capybara.current_session.driver.options[:browser]).to eq(:remote)
 
-    DVLA::Browser::Drivers.firefox(additional_options: %w[headless])
+    DVLA::Browser::Drivers.selenium_firefox(additional_arguments: %w[headless])
     expect(Capybara.current_session.driver.options[:options].options[:args]).to include('--headless')
+
+    DVLA::Browser::Drivers.selenium_edge(additional_preferences: [{ key: 'value' }])
+    expect(Capybara.current_session.driver.options[:options].prefs).to include({ key: 'value' })
 
     DVLA::Browser::Drivers.cuprite(timeout: 5)
     expect(Capybara.current_session.driver.options[:timeout]).to eq(5)
@@ -82,15 +85,15 @@ RSpec.describe DVLA::Browser::Drivers do
   end
 
   it 'responds to method that matches regex' do
-    expect(DVLA::Browser::Drivers.respond_to?(:chrome)).to be true
-    expect(DVLA::Browser::Drivers.respond_to?(:edge)).to be true
-    expect(DVLA::Browser::Drivers.respond_to?(:firefox)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:selenium_chrome)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:selenium_edge)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:selenium_firefox)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:cuprite)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:apparition)).to be true
 
-    expect(DVLA::Browser::Drivers.respond_to?(:headless_chrome)).to be true
-    expect(DVLA::Browser::Drivers.respond_to?(:headless_edge)).to be true
-    expect(DVLA::Browser::Drivers.respond_to?(:headless_firefox)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_chrome)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_edge)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_firefox)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:headless_cuprite)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:headless_apparition)).to be true
   end
