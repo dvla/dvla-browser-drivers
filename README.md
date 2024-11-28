@@ -47,6 +47,8 @@ Once installed, you are able to use any pre-configured browser driver from the l
 
 ### Default configuration
 
+[Chromium switches](https://peter.sh/experiments/chromium-command-line-switches/)
+
 | Driver                                           | Configuration                                         |
 |--------------------------------------------------|-------------------------------------------------------|
 | selenium_chrome, selenium_edge, selenium_firefox | --disable-dev-shm-usage<br/>                          |
@@ -57,12 +59,17 @@ Once installed, you are able to use any pre-configured browser driver from the l
 
 ### Additional configuration
 
-| Option                                                                      | Description                                                                                                                                                                        | supported-browsers    |
-|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| remote: 'http://localhost:4444/wd/hub'                                      | Allows you to talk to a remote browser                                                                                                                                             | firefox               |
-| additional_arguments: ['window-size=1400,1920']                             | Pass additional arguments to the driver<br/>Supported switches: https://peter.sh/experiments/chromium-command-line-switches/                                                       | chrome, edge, firefox |
-| additional_preferences: [{'download.default_directory': '<download_path>'}] | Pass additional preferences to the driver<br/>Documentation: https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_preference-instance_method | chrome, edge, firefox |
-| additional_arguments: { 'option': value, 'option': value }                  | Pass additional arguments to the driver<br/>Supported switched: https://www.rubydoc.info/gems/cuprite/                                                                             | cuprite, apparition   |
+[Cuprite Documentation](https://www.rubydoc.info/gems/cuprite/)
+[Selenium Additional Preferences Documentation](https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_preference-instance_method)
+
+| Option                 | Driver                        | Usage                                                                                           | Description                                |
+|------------------------|-------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------|
+| remote                 | Selenium, Cuprite, Apparition | `selenium_chrome(remote: 'http://localhost:4444/wd/hub')`                                       | Allows you to talk to a remote browser     |
+| additional_arguments   | Selenium                      | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver    |
+| additional_preferences | Selenium                      | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver  |
+| timeout                | Cuprite, Apparition           | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver    |
+| save_path              | Cuprite, Apparition           | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
+| browser_options        | Cuprite, Apparition           | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
 
 ## Development
 

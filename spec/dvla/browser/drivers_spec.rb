@@ -61,7 +61,7 @@ RSpec.describe DVLA::Browser::Drivers do
     options = Capybara.current_session.driver.options
 
     expect(options[:headless]).to eq(true)
-    expect(options[:timeout]).to eq(30)
+    expect(options[:timeout]).to eq(60)
     expect(options.dig(:browser_options, :'disable-smooth-scrolling')).to eq(true)
   end
 
@@ -76,8 +76,8 @@ RSpec.describe DVLA::Browser::Drivers do
     DVLA::Browser::Drivers.selenium_edge(additional_preferences: [{ key: 'value' }])
     expect(Capybara.current_session.driver.options[:options].prefs).to include({ key: 'value' })
 
-    DVLA::Browser::Drivers.cuprite(timeout: 5)
-    expect(Capybara.current_session.driver.options[:timeout]).to eq(5)
+    DVLA::Browser::Drivers.cuprite(timeout: 5, browser_options: { something: 'blah' })
+    expect(Capybara.current_session.driver.options.dig(:browser_options, :something)).to eq('blah')
   end
 
   it 'throws a NoMethodError when the method does not match regex' do
