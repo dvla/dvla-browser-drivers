@@ -3,7 +3,7 @@ module DVLA
     module Drivers
       DRIVER_REGEX = /^(?:(?<headless>headless)_)?(?<driver>(selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition))$/
 
-      OTHER_ACCEPTED_PARAMS = %i[timeout].freeze
+      OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
       SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences].freeze
       SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge].freeze
@@ -57,12 +57,19 @@ module DVLA
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{OTHER_ACCEPTED_PARAMS}'" } unless OTHER_ACCEPTED_PARAMS.include?(key)
             end
 
+            browser_options = { 'no-sandbox': nil, 'disable-smooth-scrolling': true }
+            kwargs[:browser_options] && kwargs[:browser_options].each do |key, value|
+              browser_options[key] = value
+            end
+
             ::Capybara.register_driver method do |app|
               Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(
                 app,
                 headless:,
-                timeout: kwargs[:timeout] || 30,
-                browser_options: { 'no-sandbox': nil, 'disable-smooth-scrolling': true },
+                timeout: kwargs[:timeout] || 60,
+                browser_options:,
+                save_path: kwargs[:save_path],
+                url: kwargs[:remote],
               )
             end
           end
