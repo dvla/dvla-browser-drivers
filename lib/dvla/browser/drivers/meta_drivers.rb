@@ -1,12 +1,12 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?:(?<headless>headless)_)?(?<driver>(selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition))$/
+      DRIVER_REGEX = /^(?:(?<headless>headless)_)?(?<driver>(selenium_(?<browser>chrome|firefox|edge|safari|brave)|cuprite|apparition))$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
       SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences].freeze
-      SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge].freeze
+      SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari selenium_brave].freeze
 
       # Creates methods in the Drivers module that matches the DRIVER_REGEX
       # These methods will register a Driver for use by Capybara in a test pack
@@ -30,27 +30,43 @@ module DVLA
             end
 
             ::Capybara.register_driver method do |app|
-              options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
-              options.add_argument('--disable-dev-shm-usage')
+              if browser == :safari
+                options = Selenium::WebDriver::Safari::Options.new
+              elsif browser == :brave
+                options = Selenium::WebDriver::Chrome::Options.new(web_socket_url: true)
+                options.binary = '/Applications/Brave Browser.app/Contents/MacOS/Brave Browser'
+                options.add_argument('--disable-dev-shm-usage')
+                if headless
+                  options.add_argument('--headless')
+                  options.add_argument('--no-sandbox')
+                end
+              else
+                options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
+                options.add_argument('--disable-dev-shm-usage')
 
-              if headless
-                options.add_argument('--headless')
-                options.add_argument('--no-sandbox')
+                if headless
+                  options.add_argument('--headless')
+                  options.add_argument('--no-sandbox')
+                end
               end
 
               browser = :remote if kwargs[:remote]
 
               kwargs[:additional_arguments] && kwargs[:additional_arguments].each do |argument|
                 argument.prepend('--') unless argument.start_with?('--')
-                options.add_argument(argument)
+                options.add_argument(argument) unless browser == :safari
               end
 
               kwargs[:additional_preferences] && kwargs[:additional_preferences].each do |preference|
                 key, value = preference.first
-                options.add_preference(key, value)
+                options.add_preference(key, value) unless browser == :safari
               end
 
-              driver_browser = kwargs[:remote] ? :remote : browser
+              driver_browser = if kwargs[:remote]
+                                 :remote
+                               else
+                                 browser == :brave ? :chrome : browser
+                               end
               driver_options = { browser: driver_browser, options: }
               driver_options[:url] = kwargs[:remote] if kwargs[:remote]
 
