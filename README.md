@@ -71,6 +71,17 @@ Once installed, you are able to use any pre-configured browser driver from the l
 | save_path              | Cuprite, Apparition           | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
 | browser_options        | Cuprite, Apparition           | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
 
+---
+
+### BiDi Support
+
+BiDi (Bidirectional Protocol) is enabled by default on all Selenium drivers (Chrome, Firefox, Edge). This allows bidirectional communication between the driver and browser.
+It is still in active development so breaking changes are expected. Check the documentation for the latest implementation guides:
+
+* [Selenium docs](https://www.selenium.dev/documentation/webdriver/bidi/)
+* [W3C specification](https://w3c.github.io/webdriver-bidi/)
+
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can

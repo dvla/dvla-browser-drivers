@@ -30,7 +30,7 @@ module DVLA
             end
 
             ::Capybara.register_driver method do |app|
-              options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new
+              options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
               options.add_argument('--disable-dev-shm-usage')
 
               if headless
@@ -50,7 +50,11 @@ module DVLA
                 options.add_preference(key, value)
               end
 
-              ::Capybara::Selenium::Driver.new(app, url: kwargs[:remote], browser:, options:)
+              driver_browser = kwargs[:remote] ? :remote : browser
+              driver_options = { browser: driver_browser, options: }
+              driver_options[:url] = kwargs[:remote] if kwargs[:remote]
+
+              ::Capybara::Selenium::Driver.new(app, **driver_options)
             end
           else
             kwargs.each do |key, _value|
