@@ -3,32 +3,37 @@ RSpec.describe DVLA::Browser::Drivers do
     expect(DVLA::Browser::Drivers::VERSION).not_to be nil
   end
 
-  it 'can create a chrome driver' do
+  it 'can create a Chrome driver' do
     DVLA::Browser::Drivers.selenium_chrome
     expect(Capybara.current_driver).to eq(:selenium_chrome)
   end
 
-  it 'can create a firefox driver' do
+  it 'can create a Firefox driver' do
     DVLA::Browser::Drivers.selenium_firefox
     expect(Capybara.current_driver).to eq(:selenium_firefox)
   end
 
-  it 'can create an edge driver' do
+  it 'can create an Edge driver' do
     DVLA::Browser::Drivers.selenium_edge
     expect(Capybara.current_driver).to eq(:selenium_edge)
   end
 
-  it 'can create a cuprite driver' do
+  it 'can create a Safari driver' do
+    DVLA::Browser::Drivers.selenium_safari
+    expect(Capybara.current_driver).to eq(:selenium_safari)
+  end
+
+  it 'can create a Cuprite driver' do
     DVLA::Browser::Drivers.cuprite
     expect(Capybara.current_driver).to eq(:cuprite)
   end
 
-  it 'can create an apparition driver' do
+  it 'can create an Apparition driver' do
     DVLA::Browser::Drivers.apparition
     expect(Capybara.current_driver).to eq(:apparition)
   end
 
-  it 'can create a headless chrome driver with standard options' do
+  it 'can create a headless Chrome driver with standard options' do
     DVLA::Browser::Drivers.headless_selenium_chrome
     expect(Capybara.current_driver).to eq(:headless_selenium_chrome)
 
@@ -39,22 +44,27 @@ RSpec.describe DVLA::Browser::Drivers do
     expect(args).to include('--no-sandbox')
   end
 
-  it 'can create a headless firefox driver' do
+  it 'can create a headless Firefox driver' do
     DVLA::Browser::Drivers.headless_selenium_firefox
     expect(Capybara.current_driver).to eq(:headless_selenium_firefox)
   end
 
-  it 'can create a headless edge driver' do
-    DVLA::Browser::Drivers.headless_selenium_edge
+  it 'warns the user creating an Edge driver with headless configuration' do
+    expect { DVLA::Browser::Drivers.headless_selenium_edge }.to output(/Edge does not support headless mode/).to_stdout_from_any_process
     expect(Capybara.current_driver).to eq(:headless_selenium_edge)
   end
 
-  it 'can create a headless apparition driver' do
+  it 'warns the user creating a Safari driver with headless configuration' do
+    expect { DVLA::Browser::Drivers.headless_selenium_safari }.to output(/Safari does not support headless mode/).to_stdout_from_any_process
+    expect(Capybara.current_driver).to eq(:headless_selenium_safari)
+  end
+
+  it 'can create a headless Apparition driver' do
     DVLA::Browser::Drivers.headless_apparition
     expect(Capybara.current_driver).to eq(:headless_apparition)
   end
 
-  it 'can create a headless cuprite driver with standard options' do
+  it 'can create a headless Cuprite driver with standard options' do
     DVLA::Browser::Drivers.headless_cuprite
     expect(Capybara.current_driver).to eq(:headless_cuprite)
 

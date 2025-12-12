@@ -29,10 +29,10 @@ Once installed, you are able to use any pre-configured browser driver from the l
 |---------------------------|----------------------------------------------------|
 | selenium_chrome           | `DVLA::Browser::Drivers.selenium_chrome`           |
 | headless_selenium_chrome  | `DVLA::Browser::Drivers.headless_selenium_chrome`  |
-| selenium_edge             | `DVLA::Browser::Drivers.selenium_edge`             |
-| headless_selenium_edge    | `DVLA::Browser::Drivers.headless_selenium_edge`    |
 | selenium_firefox          | `DVLA::Browser::Drivers.selenium_firefox`          |
 | headless_selenium_firefox | `DVLA::Browser::Drivers.headless_selenium_firefox` |
+| selenium_edge             | `DVLA::Browser::Drivers.selenium_edge`             |
+| selenium_safari           | `DVLA::Browser::Drivers.selenium_safari`           |
 
 ### Non-selenium drivers
 
@@ -42,6 +42,8 @@ Once installed, you are able to use any pre-configured browser driver from the l
 | headless_cuprite    | `DVLA::Browser::Drivers.headless_cuprite`    |
 | apparition          | `DVLA::Browser::Drivers.apparition`          |
 | headless_apparition | `DVLA::Browser::Drivers.headless_apparition` |
+
+**Note:** Safari and Edge do not support headless mode. 
 
 ---
 

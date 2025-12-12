@@ -24,6 +24,11 @@ module DVLA
           case driver
           when *SELENIUM_DRIVERS
             browser = matches[:browser].to_sym
+            
+            if headless && %i[safari edge].include?(browser)
+              LOG.warn { "#{browser.capitalize} does not support headless mode".red.bold }
+              headless = false
+            end
 
             kwargs.each do |key, _value|
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" } unless SELENIUM_ACCEPTED_PARAMS.include?(key)
