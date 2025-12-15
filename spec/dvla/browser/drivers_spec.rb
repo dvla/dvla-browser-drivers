@@ -1,4 +1,8 @@
 RSpec.describe DVLA::Browser::Drivers do
+  after do
+    Capybara.reset_sessions!
+  end
+
   it 'has a version number' do
     expect(DVLA::Browser::Drivers::VERSION).not_to be nil
   end
@@ -49,14 +53,12 @@ RSpec.describe DVLA::Browser::Drivers do
     expect(Capybara.current_driver).to eq(:headless_selenium_firefox)
   end
 
-  it 'warns the user creating an Edge driver with headless configuration' do
-    expect { DVLA::Browser::Drivers.headless_selenium_edge }.to output(/Edge does not support headless mode/).to_stdout_from_any_process
-    expect(Capybara.current_driver).to eq(:headless_selenium_edge)
+  it 'does not create an Edge driver with headless configuration' do
+    expect { DVLA::Browser::Drivers.headless_selenium_edge }.to raise_error NoMethodError
   end
 
-  it 'warns the user creating a Safari driver with headless configuration' do
-    expect { DVLA::Browser::Drivers.headless_selenium_safari }.to output(/Safari does not support headless mode/).to_stdout_from_any_process
-    expect(Capybara.current_driver).to eq(:headless_selenium_safari)
+  it 'does not create a Safari driver with headless configuration' do
+    expect { DVLA::Browser::Drivers.headless_selenium_safari }.to raise_error NoMethodError
   end
 
   it 'can create a headless Apparition driver' do
@@ -98,13 +100,16 @@ RSpec.describe DVLA::Browser::Drivers do
     expect(DVLA::Browser::Drivers.respond_to?(:selenium_chrome)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:selenium_edge)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:selenium_firefox)).to be true
+    expect(DVLA::Browser::Drivers.respond_to?(:selenium_safari)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:cuprite)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:apparition)).to be true
 
     expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_chrome)).to be true
-    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_edge)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_firefox)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:headless_cuprite)).to be true
     expect(DVLA::Browser::Drivers.respond_to?(:headless_apparition)).to be true
+
+    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_edge)).to be false
+    expect(DVLA::Browser::Drivers.respond_to?(:headless_selenium_safari)).to be false
   end
 end

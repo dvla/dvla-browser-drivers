@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'DVLA::Browser::Drivers BiDi Support' do
-  %i[headless_selenium_chrome headless_selenium_firefox headless_selenium_edge].each do |driver|
+  %i[headless_selenium_chrome headless_selenium_firefox selenium_edge].each do |driver|
     describe "BiDi functionality with #{driver}", :bidi_integration do
       before do
         DVLA::Browser::Drivers.send(driver)

@@ -1,7 +1,7 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?:(?<headless>headless)_(?<driver>selenium_(?<browser>chrome|firefox)|cuprite|apparition)|(?<driver>selenium_(?<browser>chrome|firefox|edge|safari)|cuprite|apparition))$/
+      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox)|cuprite|apparition)|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition))$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
@@ -19,11 +19,12 @@ module DVLA
       def self.method_missing(method, *args, **kwargs, &)
         if (matches = method.match(DRIVER_REGEX))
           headless = matches[:headless].is_a? String
-          driver = matches[:driver].to_sym
+          driver = matches[:driver]&.to_sym || matches[:driver_no_headless]&.to_sym
+          browser_match = matches[:browser] || matches[:browser_no_headless]
 
           case driver
           when *SELENIUM_DRIVERS
-            browser = matches[:browser].to_sym
+            browser = browser_match.to_sym
 
             kwargs.each do |key, _value|
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" } unless SELENIUM_ACCEPTED_PARAMS.include?(key)
