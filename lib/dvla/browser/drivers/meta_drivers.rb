@@ -1,12 +1,12 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?:(?<headless>headless)_)?(?<driver>(selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition))$/
+      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox)|cuprite|apparition)|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition))$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
-      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences].freeze
-      SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge].freeze
+      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary].freeze
+      SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari].freeze
 
       # Creates methods in the Drivers module that matches the DRIVER_REGEX
       # These methods will register a Driver for use by Capybara in a test pack
@@ -19,35 +19,39 @@ module DVLA
       def self.method_missing(method, *args, **kwargs, &)
         if (matches = method.match(DRIVER_REGEX))
           headless = matches[:headless].is_a? String
-          driver = matches[:driver].to_sym
+          driver = matches[:driver]&.to_sym || matches[:driver_no_headless]&.to_sym
+          browser_match = matches[:browser] || matches[:browser_no_headless]
 
           case driver
           when *SELENIUM_DRIVERS
-            browser = matches[:browser].to_sym
+            browser = browser_match.to_sym
 
             kwargs.each do |key, _value|
               LOG.warn { "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" } unless SELENIUM_ACCEPTED_PARAMS.include?(key)
             end
 
             ::Capybara.register_driver method do |app|
-              options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
-              options.add_argument('--disable-dev-shm-usage')
+              if browser == :safari
+                options = Selenium::WebDriver::Safari::Options.new
+              else
+                options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
+                options.binary = kwargs[:binary] if kwargs[:binary]
+                options.add_argument('--disable-dev-shm-usage')
 
-              if headless
-                options.add_argument('--headless')
-                options.add_argument('--no-sandbox')
-              end
+                if headless
+                  options.add_argument('--headless')
+                  options.add_argument('--no-sandbox')
+                end
 
-              browser = :remote if kwargs[:remote]
+                kwargs[:additional_arguments] && kwargs[:additional_arguments].each do |argument|
+                  argument.prepend('--') unless argument.start_with?('--')
+                  options.add_argument(argument)
+                end
 
-              kwargs[:additional_arguments] && kwargs[:additional_arguments].each do |argument|
-                argument.prepend('--') unless argument.start_with?('--')
-                options.add_argument(argument)
-              end
-
-              kwargs[:additional_preferences] && kwargs[:additional_preferences].each do |preference|
-                key, value = preference.first
-                options.add_preference(key, value)
+                kwargs[:additional_preferences] && kwargs[:additional_preferences].each do |preference|
+                  key, value = preference.first
+                  options.add_preference(key, value)
+                end
               end
 
               driver_browser = kwargs[:remote] ? :remote : browser
