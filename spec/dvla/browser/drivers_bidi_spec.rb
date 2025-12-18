@@ -3,6 +3,7 @@
 RSpec.describe 'DVLA::Browser::Drivers BiDi Support' do
   %i[headless_selenium_chrome headless_selenium_firefox selenium_edge].each do |driver|
     describe "BiDi functionality with #{driver}", :bidi_integration do
+      skip 'Edge WebDriver not available in CI' if driver == :selenium_edge && ENV['CI']
       before do
         DVLA::Browser::Drivers.send(driver)
         Capybara.current_driver = driver
