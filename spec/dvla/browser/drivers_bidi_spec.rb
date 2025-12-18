@@ -10,6 +10,7 @@ RSpec.describe 'DVLA::Browser::Drivers BiDi Support' do
 
       after do
         Capybara.reset_sessions!
+        Capybara.instance_variable_set(:@session_pool, nil)
       end
 
       it 'provides BiDi instance by default' do

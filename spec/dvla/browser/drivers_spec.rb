@@ -1,6 +1,7 @@
 RSpec.describe DVLA::Browser::Drivers do
   after do
     Capybara.reset_sessions!
+    Capybara.instance_variable_set(:@session_pool, nil)
   end
 
   it 'has a version number' do
@@ -77,17 +78,23 @@ RSpec.describe DVLA::Browser::Drivers do
     expect(options.dig(:browser_options, :'disable-smooth-scrolling')).to eq(true)
   end
 
-  it 'allows additional args to be passed' do
+  it 'allows Chrome to accept remote argument' do
     DVLA::Browser::Drivers.selenium_chrome(remote: 'hello_world')
     expect(Capybara.current_session.driver.options[:url]).to eq('hello_world')
     expect(Capybara.current_session.driver.options[:browser]).to eq(:remote)
+  end
 
+  it 'allows Firefox to accept additional arguments' do
     DVLA::Browser::Drivers.selenium_firefox(additional_arguments: %w[headless])
     expect(Capybara.current_session.driver.options[:options].options[:args]).to include('--headless')
+  end
 
+  it 'allows Edge to accept additional preferences' do
     DVLA::Browser::Drivers.selenium_edge(additional_preferences: [{ key: 'value' }])
     expect(Capybara.current_session.driver.options[:options].prefs).to include({ key: 'value' })
+  end
 
+  it 'allows Cuprite to accept timeout and browser options' do
     DVLA::Browser::Drivers.cuprite(timeout: 5, browser_options: { something: 'blah' })
     expect(Capybara.current_session.driver.options.dig(:browser_options, :something)).to eq('blah')
   end
