@@ -72,15 +72,16 @@ Modifiers can be combined, e.g. `headless_selenium_firefox_no_js_proxied`
 [Cuprite Documentation](https://www.rubydoc.info/gems/cuprite/)
 [Selenium Additional Preferences Documentation](https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_preference-instance_method)
 
-| Option                 | Driver                        | Usage                                                                                           | Description                                |
-|------------------------|-------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------|
-| remote                 | Selenium, Cuprite, Apparition | `selenium_chrome(remote: 'http://localhost:4444/wd/hub')`                                       | Allows you to talk to a remote browser     |
-| additional_arguments   | Selenium                      | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver    |
-| additional_preferences | Selenium                      | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver  |
-| proxy                  | Selenium, Cuprite             | `selenium_firefox_proxied(proxy: 'http://proxy:8080')`                                          | Sets the proxy URL for proxied drivers     |
-| timeout                | Cuprite, Apparition           | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver    |
-| save_path              | Cuprite, Apparition           | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
-| browser_options        | Cuprite, Apparition           | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
+| Option                 | Driver                               | Usage                                                                                           | Description                                |
+|------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------|
+| remote                 | Selenium, Cuprite, Apparition        | `selenium_chrome(remote: 'http://localhost:4444/wd/hub')`                                       | Allows you to talk to a remote browser     |
+| additional_arguments   | Selenium                             | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver    |
+| additional_preferences | Selenium                             | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver  |
+| proxy                  | Selenium, Cuprite                    | `selenium_firefox_proxied(proxy: 'http://proxy:8080')`                                          | Sets the proxy URL for proxied drivers     |
+| window_size            | Chrome, Firefox, Cuprite, Apparition | `selenium_chrome(window_size: [1400, 900])`                                                     | Sets the browser window size. Accepts an array `[w, h]` or a string `'1400x900'`. Not supported on Edge or Safari |
+| timeout                | Cuprite, Apparition                  | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver    |
+| save_path              | Cuprite, Apparition                  | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
+| browser_options        | Cuprite, Apparition                  | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
 
 ---
 
