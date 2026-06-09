@@ -1,3 +1,4 @@
+require_relative 'drivers/mobile_profiles'
 require_relative 'drivers/meta_drivers'
 require_relative 'drivers/version'
 

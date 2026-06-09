@@ -78,7 +78,7 @@ Modifiers can be combined, e.g. `headless_selenium_firefox_no_js_proxied`
 | additional_arguments   | Selenium                             | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver    |
 | additional_preferences | Selenium                             | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver  |
 | proxy                  | Selenium, Cuprite                    | `selenium_firefox_proxied(proxy: 'http://proxy:8080')`                                          | Sets the proxy URL for proxied drivers     |
-| window_size            | Chrome, Firefox, Cuprite, Apparition | `selenium_chrome(window_size: [1400, 900])`                                                     | Sets the browser window size. Accepts an array `[w, h]` or a string `'1400x900'`. Not supported on Edge or Safari |
+| window_size            | Chrome, Edge, Cuprite, Apparition    | `selenium_chrome(window_size: [1400, 900])`                                                     | Sets the browser window size. Accepts an array `[w, h]` or a string `'1400x900'`. Not supported on Firefox, Edge or Safari |
 | timeout                | Cuprite, Apparition                  | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver    |
 | save_path              | Cuprite, Apparition                  | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
 | browser_options        | Cuprite, Apparition                  | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
@@ -93,6 +93,33 @@ It is still in active development so breaking changes are expected. Check the do
 * [Selenium docs](https://www.selenium.dev/documentation/webdriver/bidi/)
 * [W3C specification](https://w3c.github.io/webdriver-bidi/)
 
+
+## Rake Tasks
+
+The gem ships with a set of rake tasks to quickly launch any driver against a URL for manual inspection.
+Add the following to your `Rakefile` to make them available:
+
+```ruby
+require 'dvla/browser/drivers/tasks'
+```
+
+Then run any `browser:*` task, e.g.:
+
+```bash
+bundle exec rake browser:selenium_chrome
+bundle exec rake browser:headless_cuprite
+```
+
+The following environment variables can be used to configure the tasks:
+
+| Variable            | Default                  | Description                              |
+|---------------------|--------------------------|------------------------------------------|
+| `BROWSER_URL`       | `http://localhost:3000`  | URL the browser will open                |
+| `PROXY_URL`         | `http://localhost:8080`  | Proxy URL for `_proxied` tasks           |
+| `BROWSER_OPEN_TIME` | `10`                     | Seconds to hold the browser open         |
+| `BROWSER_WINDOW_SIZE` | `1337x800`             | Window size for `_window_size` tasks     |
+
+---
 
 ## Development
 

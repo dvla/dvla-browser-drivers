@@ -5,7 +5,7 @@ module DVLA
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote proxy window_size].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
-      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size].freeze
+      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size mobile_emulation].freeze
       SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari].freeze
 
       # Creates methods in the Drivers module that matches the DRIVER_REGEX
@@ -36,7 +36,7 @@ module DVLA
               puts "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" unless SELENIUM_ACCEPTED_PARAMS.include?(key)
             end
 
-            puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && %i[safari edge].include?(browser)
+            puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && %i[safari].include?(browser)
 
             ::Capybara.register_driver method do |app|
               if browser == :safari
@@ -69,9 +69,15 @@ module DVLA
                   end
                 end
 
-                if kwargs[:window_size] && !%i[firefox edge].include?(browser)
+                if kwargs[:window_size] && %i[chrome edge].include?(browser)
                   size = parse_window_size(kwargs[:window_size])
                   options.add_argument("--window-size=#{size[0]},#{size[1]}")
+                end
+
+                if kwargs[:mobile_emulation] && %i[chrome edge].include?(browser)
+                  puts 'Warning: window_size will be overridden by mobile_emulation' if kwargs[:window_size]
+                  emulation = resolve_mobile_emulation(kwargs[:mobile_emulation])
+                  options.add_emulation(**emulation)
                 end
 
                 kwargs[:additional_arguments] && kwargs[:additional_arguments].each do |argument|
@@ -103,7 +109,6 @@ module DVLA
                   size = parse_window_size(kwargs[:window_size])
                   driver.browser.manage.window.resize_to(size[0], size[1])
                 end
-
               end
             end
           else
@@ -113,7 +118,6 @@ module DVLA
 
             browser_options = { 'no-sandbox': nil, 'disable-smooth-scrolling': true }
             browser_options = browser_options.merge(kwargs[:browser_options]) if kwargs[:browser_options]
-            browser_options[:'window-size'] = kwargs[:window_size] if kwargs[:window_size]
             browser_options[:'blink-settings'] = 'scriptEnabled=false' if no_js
 
             if kwargs[:proxy]
@@ -153,9 +157,24 @@ module DVLA
       end
 
       def self.parse_window_size(window_size)
-        window_size.is_a?(Array) ? window_size : window_size.to_s.split(/[x,]/).map(&:to_i)
+        size = window_size.is_a?(Array) ? window_size : window_size.to_s.split(/[x,]/).map(&:to_i)
+        raise ArgumentError, "window_size must have exactly 2 elements [width, height], got: #{window_size.inspect}" unless size.length == 2
+
+        size
       end
       private_class_method :parse_window_size
+
+      def self.resolve_mobile_emulation(mobile_emulation)
+        if mobile_emulation.is_a?(Symbol)
+          device_name = MOBILE_PROFILES[mobile_emulation]
+          raise ArgumentError, "Unknown mobile profile: ':#{mobile_emulation}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless device_name
+
+          { device_name: }
+        else
+          mobile_emulation.transform_keys(&:to_sym)
+        end
+      end
+      private_class_method :resolve_mobile_emulation
     end
   end
 end
