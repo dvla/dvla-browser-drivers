@@ -4,6 +4,7 @@ require_relative 'drivers/version'
 
 require 'capybara/apparition'
 require 'capybara/cuprite'
+require 'capybara-playwright-driver'
 require 'selenium-webdriver'
 
 module DVLA

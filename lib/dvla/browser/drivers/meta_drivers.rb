@@ -1,10 +1,12 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition)(?<no_js>_no_js)?(?<proxied>_proxied)?|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition)(?<no_js_no_headless>_no_js)?(?<proxied_no_headless>_proxied)?)$/
+      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition|playwright_(?<pw_browser>chromium|firefox|webkit))(?<no_js>_no_js)?(?<proxied>_proxied)?|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition|playwright_(?<pw_browser_no_headless>chromium|firefox|webkit))(?<no_js_no_headless>_no_js)?(?<proxied_no_headless>_proxied)?)$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote proxy window_size].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
+      PLAYWRIGHT_ACCEPTED_PARAMS = %i[headless browser_type proxy window_size].freeze
+      PLAYWRIGHT_DRIVERS = %i[playwright_chromium playwright_firefox playwright_webkit].freeze
       SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size mobile_emulation].freeze
       SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari].freeze
 
@@ -77,6 +79,7 @@ module DVLA
                 if kwargs[:mobile_emulation] && %i[chrome edge].include?(browser)
                   puts 'Warning: window_size will be overridden by mobile_emulation' if kwargs[:window_size]
                   emulation = resolve_mobile_emulation(kwargs[:mobile_emulation])
+                  puts "Mobile emulation: #{kwargs[:mobile_emulation]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
                   options.add_emulation(**emulation)
                 end
 
@@ -110,6 +113,24 @@ module DVLA
                   driver.browser.manage.window.resize_to(size[0], size[1])
                 end
               end
+            end
+          when *PLAYWRIGHT_DRIVERS
+            pw_browser = (matches[:pw_browser] || matches[:pw_browser_no_headless]).to_sym
+
+            kwargs.each do |key, _value|
+              puts "Key: '#{key}' will be ignored | Use one from: '#{PLAYWRIGHT_ACCEPTED_PARAMS}'" unless PLAYWRIGHT_ACCEPTED_PARAMS.include?(key)
+            end
+
+            warn_if_playwright_browser_missing(pw_browser)
+
+            ::Capybara.register_driver method do |app|
+              playwright_options = { browser_type: pw_browser, headless: headless }
+              playwright_options[:proxy] = { server: kwargs[:proxy] } if kwargs[:proxy]
+              if kwargs[:window_size]
+                size = parse_window_size(kwargs[:window_size])
+                playwright_options[:screen] = { width: size[0], height: size[1] }
+              end
+              Capybara::Playwright::Driver.new(app, **playwright_options)
             end
           else
             kwargs.each do |key, _value|
@@ -156,6 +177,15 @@ module DVLA
         method.match(DRIVER_REGEX) || super
       end
 
+      def self.warn_if_playwright_browser_missing(browser_type)
+        cache_root = RUBY_PLATFORM.include?('darwin') ? '~/Library/Caches/ms-playwright' : '~/.cache/ms-playwright'
+        cache_root = File.expand_path(cache_root)
+        return if Dir.glob("#{cache_root}/#{browser_type}-*/").any? { |dir| Dir.exist?(dir) && !Dir.empty?(dir) }
+
+        puts "Warning: No Playwright '#{browser_type}' browser found in #{cache_root}. Run: npx playwright@<version> install #{browser_type}"
+      end
+      private_class_method :warn_if_playwright_browser_missing
+
       def self.parse_window_size(window_size)
         size = window_size.is_a?(Array) ? window_size : window_size.to_s.split(/[x,]/).map(&:to_i)
         raise ArgumentError, "window_size must have exactly 2 elements [width, height], got: #{window_size.inspect}" unless size.length == 2
@@ -166,10 +196,13 @@ module DVLA
 
       def self.resolve_mobile_emulation(mobile_emulation)
         if mobile_emulation.is_a?(Symbol)
-          device_name = MOBILE_PROFILES[mobile_emulation]
-          raise ArgumentError, "Unknown mobile profile: ':#{mobile_emulation}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless device_name
+          profile = MOBILE_PROFILES[mobile_emulation]
+          raise ArgumentError, "Unknown mobile profile: ':#{mobile_emulation}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless profile
 
-          { device_name: }
+          {
+            device_metrics: { width: profile[:width], height: profile[:height], pixelRatio: profile[:device_scale_factor], touch: profile[:has_touch] },
+            user_agent: profile[:user_agent]
+          }
         else
           mobile_emulation.transform_keys(&:to_sym)
         end
