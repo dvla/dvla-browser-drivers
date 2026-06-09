@@ -1,7 +1,7 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition|playwright_(?<pw_browser>chromium|firefox|webkit))(?<no_js>_no_js)?(?<proxied>_proxied)?|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition|playwright_(?<pw_browser_no_headless>chromium|firefox|webkit))(?<no_js_no_headless>_no_js)?(?<proxied_no_headless>_proxied)?)$/
+      DRIVER_REGEX = /^(?<headless>headless_)?(?<driver>selenium_(?<browser>chrome|firefox|edge|safari)|cuprite|apparition|playwright_(?<pw_browser>chromium|firefox|webkit))(?<no_js>_no_js)?(?<proxied>_proxied)?$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote proxy window_size].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
@@ -20,11 +20,11 @@ module DVLA
       #   DVLA::Browser::Drivers.chrome(remote: 'http://localhost:4444/wd/hub')
       def self.method_missing(method, *args, **kwargs, &)
         if (matches = method.match(DRIVER_REGEX))
-          headless = matches[:headless].is_a? String
-          no_js = matches[:no_js].is_a?(String) || matches[:no_js_no_headless].is_a?(String)
-          proxied = matches[:proxied].is_a?(String) || matches[:proxied_no_headless].is_a?(String)
-          driver = matches[:driver]&.to_sym || matches[:driver_no_headless]&.to_sym
-          browser_match = matches[:browser] || matches[:browser_no_headless]
+          headless = !matches[:headless].nil?
+          no_js = !matches[:no_js].nil?
+          proxied = !matches[:proxied].nil?
+          driver = matches[:driver].to_sym
+          browser_match = matches[:browser]
 
           if proxied && !kwargs[:proxy]
             raise ArgumentError, "Method '#{method}' requires proxy parameter"
@@ -34,73 +34,12 @@ module DVLA
           when *SELENIUM_DRIVERS
             browser = browser_match.to_sym
 
-            kwargs.each do |key, _value|
-              puts "Key: '#{key}' will be ignored | Use one from: '#{SELENIUM_ACCEPTED_PARAMS}'" unless SELENIUM_ACCEPTED_PARAMS.include?(key)
-            end
+            warn_ignored_kwargs(kwargs, SELENIUM_ACCEPTED_PARAMS)
 
             puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && %i[safari].include?(browser)
 
             ::Capybara.register_driver method do |app|
-              if browser == :safari
-                options = Selenium::WebDriver::Safari::Options.new
-              else
-                options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
-                options.binary = kwargs[:binary] if kwargs[:binary]
-                options.add_argument('--disable-dev-shm-usage')
-
-                if headless
-                  options.add_argument('--headless')
-                  options.add_argument('--no-sandbox')
-                end
-
-                if kwargs[:proxy]
-                  if browser == :firefox
-                    proxy_uri = URI.parse(kwargs[:proxy])
-                    proxy_host = proxy_uri.host == '0.0.0.0' ? '127.0.0.1' : proxy_uri.host
-                    options.add_preference('network.proxy.type', 1)
-                    options.add_preference('network.proxy.http', proxy_host)
-                    options.add_preference('network.proxy.http_port', proxy_uri.port)
-                    options.add_preference('network.proxy.ssl', proxy_host)
-                    options.add_preference('network.proxy.ssl_port', proxy_uri.port)
-                    options.add_preference('network.proxy.no_proxies_on', '')
-                    options.add_preference('security.cert_pinning.enforcement_level', 0)
-                    options.add_preference('security.enterprise_roots.enabled', true)
-                  else
-                    options.add_argument("--proxy-server=#{kwargs[:proxy]}")
-                    options.add_argument('--ignore-certificate-errors')
-                  end
-                end
-
-                if kwargs[:window_size] && %i[chrome edge].include?(browser)
-                  size = parse_window_size(kwargs[:window_size])
-                  options.add_argument("--window-size=#{size[0]},#{size[1]}")
-                end
-
-                if kwargs[:mobile_emulation] && %i[chrome edge].include?(browser)
-                  puts 'Warning: window_size will be overridden by mobile_emulation' if kwargs[:window_size]
-                  emulation = resolve_mobile_emulation(kwargs[:mobile_emulation])
-                  puts "Mobile emulation: #{kwargs[:mobile_emulation]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
-                  options.add_emulation(**emulation)
-                end
-
-                kwargs[:additional_arguments] && kwargs[:additional_arguments].each do |argument|
-                  argument.prepend('--') unless argument.start_with?('--')
-                  options.add_argument(argument)
-                end
-
-                kwargs[:additional_preferences] && kwargs[:additional_preferences].each do |preference|
-                  key, value = preference.first
-                  options.add_preference(key, value)
-                end
-
-                if no_js
-                  if browser == :chrome
-                    options.add_preference('profile.managed_default_content_settings.javascript', 2)
-                  elsif browser == :firefox
-                    options.add_preference('javascript.enabled', false)
-                  end
-                end
-              end
+              options = build_selenium_options(browser, headless: headless, no_js: no_js, **kwargs)
 
               driver_browser = kwargs[:remote] ? :remote : browser
               driver_options = { browser: driver_browser, options: }
@@ -115,11 +54,9 @@ module DVLA
               end
             end
           when *PLAYWRIGHT_DRIVERS
-            pw_browser = (matches[:pw_browser] || matches[:pw_browser_no_headless]).to_sym
+            pw_browser = matches[:pw_browser].to_sym
 
-            kwargs.each do |key, _value|
-              puts "Key: '#{key}' will be ignored | Use one from: '#{PLAYWRIGHT_ACCEPTED_PARAMS}'" unless PLAYWRIGHT_ACCEPTED_PARAMS.include?(key)
-            end
+            warn_ignored_kwargs(kwargs, PLAYWRIGHT_ACCEPTED_PARAMS)
 
             warn_if_playwright_browser_missing(pw_browser)
 
@@ -133,9 +70,7 @@ module DVLA
               Capybara::Playwright::Driver.new(app, **playwright_options)
             end
           else
-            kwargs.each do |key, _value|
-              puts "Key: '#{key}' will be ignored | Use one from: '#{OTHER_ACCEPTED_PARAMS}'" unless OTHER_ACCEPTED_PARAMS.include?(key)
-            end
+            warn_ignored_kwargs(kwargs, OTHER_ACCEPTED_PARAMS)
 
             browser_options = { 'no-sandbox': nil, 'disable-smooth-scrolling': true }
             browser_options = browser_options.merge(kwargs[:browser_options]) if kwargs[:browser_options]
@@ -147,19 +82,15 @@ module DVLA
             end
 
             ::Capybara.register_driver method do |app|
-              Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(
-                app,
+              driver_opts = {
                 headless:,
                 timeout: kwargs[:timeout] || 60,
                 browser_options:,
                 save_path: kwargs[:save_path],
                 url: kwargs[:remote],
-                ).tap do |driver|
-                if kwargs[:window_size]
-                  size = parse_window_size(kwargs[:window_size])
-                  driver.browser.resize(width: size[0], height: size[1])
-                end
-              end
+              }
+              driver_opts[:screen_size] = parse_window_size(kwargs[:window_size]) if kwargs[:window_size]
+              Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(app, **driver_opts)
             end
           end
 
@@ -185,6 +116,76 @@ module DVLA
         puts "Warning: No Playwright '#{browser_type}' browser found in #{cache_root}. Run: npx playwright@<version> install #{browser_type}"
       end
       private_class_method :warn_if_playwright_browser_missing
+
+      def self.build_selenium_options(browser, headless:, no_js:, **kwargs)
+        return Selenium::WebDriver::Safari::Options.new if browser == :safari
+
+        options = Object.const_get("Selenium::WebDriver::#{browser.to_s.capitalize}::Options").new(web_socket_url: true)
+        options.binary = kwargs[:binary] if kwargs[:binary]
+        options.add_argument('--disable-dev-shm-usage')
+
+        if headless
+          options.add_argument('--headless')
+          options.add_argument('--no-sandbox')
+        end
+
+        apply_selenium_proxy(options, browser, kwargs[:proxy]) if kwargs[:proxy]
+
+        if kwargs[:window_size] && %i[chrome edge].include?(browser)
+          size = parse_window_size(kwargs[:window_size])
+          options.add_argument("--window-size=#{size[0]},#{size[1]}")
+        end
+
+        if kwargs[:mobile_emulation] && %i[chrome edge].include?(browser)
+          puts 'Warning: window_size will be overridden by mobile_emulation' if kwargs[:window_size]
+          emulation = resolve_mobile_emulation(kwargs[:mobile_emulation])
+          puts "Mobile emulation: #{kwargs[:mobile_emulation]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
+          options.add_emulation(**emulation)
+        end
+
+        kwargs[:additional_arguments]&.each do |argument|
+          argument.prepend('--') unless argument.start_with?('--')
+          options.add_argument(argument)
+        end
+
+        kwargs[:additional_preferences]&.each do |preference|
+          options.add_preference(*preference.first)
+        end
+
+        if no_js
+          options.add_preference('profile.managed_default_content_settings.javascript', 2) if browser == :chrome
+          options.add_preference('javascript.enabled', false) if browser == :firefox
+        end
+
+        options
+      end
+      private_class_method :build_selenium_options
+
+      def self.apply_selenium_proxy(options, browser, proxy)
+        if browser == :firefox
+          proxy_uri = URI.parse(proxy)
+          proxy_host = proxy_uri.host == '0.0.0.0' ? '127.0.0.1' : proxy_uri.host
+          options.add_preference('network.proxy.type', 1)
+          options.add_preference('network.proxy.http', proxy_host)
+          options.add_preference('network.proxy.http_port', proxy_uri.port)
+          options.add_preference('network.proxy.ssl', proxy_host)
+          options.add_preference('network.proxy.ssl_port', proxy_uri.port)
+          options.add_preference('network.proxy.no_proxies_on', '')
+          options.add_preference('security.cert_pinning.enforcement_level', 0)
+          options.add_preference('security.enterprise_roots.enabled', true)
+        else
+          options.add_argument("--proxy-server=#{proxy}")
+          options.add_argument('--ignore-certificate-errors')
+        end
+      end
+      private_class_method :apply_selenium_proxy
+
+      def self.warn_ignored_kwargs(kwargs, accepted)
+        kwargs.each_key do |key|
+          puts "Key: '#{key}' will be ignored | Use one from: '#{accepted}'" unless accepted.include?(key)
+        end
+      end
+      private_class_method :warn_ignored_kwargs
 
       def self.parse_window_size(window_size)
         size = window_size.is_a?(Array) ? window_size : window_size.to_s.split(/[x,]/).map(&:to_i)
