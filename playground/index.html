@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Browser Info</title>
+</head>
+<body>
+  <p id="browser">Browser: unknown</p>
+  <p id="js">Javascript enabled: false</p>
+  <p id="ua">User Agent: unknown</p>
+  <p id="webdriver">Webdriver: unknown</p>
+  <p id="size_inner">Inner Size: unknown</p>
+  <p id="size_outer">Outer Size: unknown</p>
+  <p id="resolution">Screen Resolution: unknown</p>
+  <p id="orientation">Screen Orientation: unknown</p>
+  <p id="cores">Number of Cores: unknown</p>
+  <p id="touch">Touchscreen Enabled: unknown</p>
+  <p id="cookies">Cookies Enabled: unknown</p>
+  <p id="local_storage">Local Storage: unknown</p>
+  <p id="session_storage">Session Storage: unknown</p>
+  <p id="history">History Entries: unknown</p>
+  <p id="referrer">Referrer: unknown</p>
+  <p id="graphics">Graphics Card: unknown</p>
+  <p id="private">Private Browsing: unknown</p>
+
+  <script>
+    const ua = navigator.userAgent;
+    const browser = navigator.userAgentData?.brands.map(b => b.brand).join(', ') ?? 'unknown';
+
+    document.getElementById('browser').textContent = `Browser: ${browser}`;
+    document.getElementById('js').textContent = 'Javascript enabled: true';
+    document.getElementById('ua').textContent = `User Agent: ${ua}`;
+    document.getElementById('webdriver').textContent = `Webdriver: ${navigator.webdriver}`;
+    document.getElementById('size_inner').textContent = `Inner Size: ${window.innerWidth}x${window.innerHeight}`;
+    document.getElementById('size_outer').textContent = `Outer Size: ${window.outerWidth}x${window.outerHeight}`;
+    document.getElementById('resolution').textContent = `Screen Resolution: ${screen.width}x${screen.height}`;
+    document.getElementById('orientation').textContent = `Screen Orientation: ${screen.orientation?.type ?? 'unknown'}`;
+    document.getElementById('cores').textContent = `Number of Cores: ${navigator.hardwareConcurrency}`;
+    document.getElementById('touch').textContent = `Touchscreen Enabled: ${navigator.maxTouchPoints > 0}`;
+    document.getElementById('cookies').textContent = `Cookies Enabled: ${navigator.cookieEnabled}`;
+    document.getElementById('history').textContent = `History Entries: ${history.length}`;
+    document.getElementById('referrer').textContent = `Referrer: ${document.referrer || 'none'}`;
+
+    try { localStorage.getItem(''); document.getElementById('local_storage').textContent = 'Local Storage: true'; }
+    catch { document.getElementById('local_storage').textContent = 'Local Storage: false'; }
+
+    try { sessionStorage.getItem(''); document.getElementById('session_storage').textContent = 'Session Storage: true'; }
+    catch { document.getElementById('session_storage').textContent = 'Session Storage: false'; }
+
+    try {
+      const gl = document.createElement('canvas').getContext('webgl');
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      document.getElementById('graphics').textContent = `Graphics Card: ${ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'unavailable'}`;
+    } catch { document.getElementById('graphics').textContent = 'Graphics Card: unavailable'; }
+  </script>
+</body>
+</html>
