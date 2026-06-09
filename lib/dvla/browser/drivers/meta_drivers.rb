@@ -19,94 +19,86 @@ module DVLA
       # @example Driver with additional arguments
       #   DVLA::Browser::Drivers.chrome(remote: 'http://localhost:4444/wd/hub')
       def self.method_missing(method, *args, **kwargs, &)
-        if (matches = method.match(DRIVER_REGEX))
-          headless = !matches[:headless].nil?
-          no_js = !matches[:no_js].nil?
-          proxied = !matches[:proxied].nil?
-          driver = matches[:driver].to_sym
-          browser_match = matches[:browser]
+        matches = method.match(DRIVER_REGEX)
+        return super unless matches
 
-          if proxied && !kwargs[:proxy]
-            raise ArgumentError, "Method '#{method}' requires proxy parameter"
-          end
+        headless = !matches[:headless].nil?
+        no_js    = !matches[:no_js].nil?
+        driver   = matches[:driver].to_sym
 
-          case driver
-          when *SELENIUM_DRIVERS
-            browser = browser_match.to_sym
+        raise ArgumentError, "Method '#{method}' requires proxy parameter" if matches[:proxied] && !kwargs[:proxy]
 
-            warn_ignored_kwargs(kwargs, SELENIUM_ACCEPTED_PARAMS)
-
-            puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && %i[safari].include?(browser)
-
-            ::Capybara.register_driver method do |app|
-              options = build_selenium_options(browser, headless: headless, no_js: no_js, **kwargs)
-
-              driver_browser = kwargs[:remote] ? :remote : browser
-              driver_options = { browser: driver_browser, options: }
-              driver_options[:url] = kwargs[:remote] if kwargs[:remote]
-
-              ::Capybara::Selenium::Driver.new(app, **driver_options).tap do |driver|
-                driver.browser.execute_cdp('Emulation.setScriptExecutionDisabled', value: true) if no_js && browser == :edge
-                if kwargs[:window_size] && browser == :firefox
-                  size = parse_window_size(kwargs[:window_size])
-                  driver.browser.manage.window.resize_to(size[0], size[1])
-                end
-              end
-            end
-          when *PLAYWRIGHT_DRIVERS
-            pw_browser = matches[:pw_browser].to_sym
-
-            warn_ignored_kwargs(kwargs, PLAYWRIGHT_ACCEPTED_PARAMS)
-
-            warn_if_playwright_browser_missing(pw_browser)
-
-            ::Capybara.register_driver method do |app|
-              playwright_options = { browser_type: pw_browser, headless: headless }
-              playwright_options[:proxy] = { server: kwargs[:proxy] } if kwargs[:proxy]
-              if kwargs[:window_size]
-                size = parse_window_size(kwargs[:window_size])
-                playwright_options[:screen] = { width: size[0], height: size[1] }
-              end
-              Capybara::Playwright::Driver.new(app, **playwright_options)
-            end
-          else
-            warn_ignored_kwargs(kwargs, OTHER_ACCEPTED_PARAMS)
-
-            browser_options = { 'no-sandbox': nil, 'disable-smooth-scrolling': true }
-            browser_options = browser_options.merge(kwargs[:browser_options]) if kwargs[:browser_options]
-            browser_options[:'blink-settings'] = 'scriptEnabled=false' if no_js
-
-            if kwargs[:proxy]
-              browser_options[:'proxy-server'] = kwargs[:proxy]
-              browser_options[:'ignore-certificate-errors'] = nil
-            end
-
-            ::Capybara.register_driver method do |app|
-              driver_opts = {
-                headless:,
-                timeout: kwargs[:timeout] || 60,
-                browser_options:,
-                save_path: kwargs[:save_path],
-                url: kwargs[:remote],
-              }
-              driver_opts[:screen_size] = parse_window_size(kwargs[:window_size]) if kwargs[:window_size]
-              Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(app, **driver_opts)
-            end
-          end
-
-          puts "Driver set to: '#{method}'"
-
-          ::Capybara.javascript_driver = method
-          ::Capybara.default_driver = method
-          ::Capybara.current_driver = method
-        else
-          super.method_missing(method, *args, &)
+        case driver
+        when *SELENIUM_DRIVERS   then register_selenium_driver(method, matches[:browser].to_sym, headless:, no_js:, **kwargs)
+        when *PLAYWRIGHT_DRIVERS then register_playwright_driver(method, matches[:pw_browser].to_sym, headless:, **kwargs)
+        else                          register_other_driver(method, driver, headless:, no_js:, **kwargs)
         end
+
+        puts "Driver set to: '#{method}'"
+        ::Capybara.javascript_driver = method
+        ::Capybara.default_driver    = method
+        ::Capybara.current_driver    = method
       end
 
       def self.respond_to_missing?(method, *args)
         method.match(DRIVER_REGEX) || super
       end
+
+      def self.register_selenium_driver(method, browser, headless:, no_js:, **kwargs)
+        warn_ignored_kwargs(kwargs, SELENIUM_ACCEPTED_PARAMS)
+        puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && browser == :safari
+
+        ::Capybara.register_driver method do |app|
+          options        = build_selenium_options(browser, headless:, no_js:, **kwargs)
+          driver_browser = kwargs[:remote] ? :remote : browser
+          driver_options = { browser: driver_browser, options: }
+          driver_options[:url] = kwargs[:remote] if kwargs[:remote]
+
+          ::Capybara::Selenium::Driver.new(app, **driver_options).tap do |d|
+            d.browser.execute_cdp('Emulation.setScriptExecutionDisabled', value: true) if no_js && browser == :edge
+            if kwargs[:window_size] && browser == :firefox
+              size = parse_window_size(kwargs[:window_size])
+              d.browser.manage.window.resize_to(size[0], size[1])
+            end
+          end
+        end
+      end
+      private_class_method :register_selenium_driver
+
+      def self.register_playwright_driver(method, pw_browser, headless:, **kwargs)
+        warn_ignored_kwargs(kwargs, PLAYWRIGHT_ACCEPTED_PARAMS)
+        warn_if_playwright_browser_missing(pw_browser)
+
+        ::Capybara.register_driver method do |app|
+          opts = { browser_type: pw_browser, headless: }
+          opts[:proxy] = { server: kwargs[:proxy] } if kwargs[:proxy]
+          if kwargs[:window_size]
+            size = parse_window_size(kwargs[:window_size])
+            opts[:screen] = { width: size[0], height: size[1] }
+          end
+          Capybara::Playwright::Driver.new(app, **opts)
+        end
+      end
+      private_class_method :register_playwright_driver
+
+      def self.register_other_driver(method, driver, headless:, no_js:, **kwargs)
+        warn_ignored_kwargs(kwargs, OTHER_ACCEPTED_PARAMS)
+
+        browser_options = { 'no-sandbox': nil, 'disable-smooth-scrolling': true }
+        browser_options.merge!(kwargs[:browser_options]) if kwargs[:browser_options]
+        browser_options[:'blink-settings'] = 'scriptEnabled=false' if no_js
+        if kwargs[:proxy]
+          browser_options[:'proxy-server'] = kwargs[:proxy]
+          browser_options[:'ignore-certificate-errors'] = nil
+        end
+
+        ::Capybara.register_driver method do |app|
+          opts = { headless:, timeout: kwargs[:timeout] || 60, browser_options:, save_path: kwargs[:save_path], url: kwargs[:remote] }
+          opts[:screen_size] = parse_window_size(kwargs[:window_size]) if kwargs[:window_size]
+          Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(app, **opts)
+        end
+      end
+      private_class_method :register_other_driver
 
       def self.warn_if_playwright_browser_missing(browser_type)
         cache_root = RUBY_PLATFORM.include?('darwin') ? '~/Library/Caches/ms-playwright' : '~/.cache/ms-playwright'

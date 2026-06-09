@@ -3,55 +3,209 @@
 <head>
   <meta charset="UTF-8">
   <title>Browser Info</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; }
+    h2 { margin: 0 0 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #999; }
+    table { border-collapse: collapse; }
+    td { padding: 0.4rem 1rem; border-bottom: 1px solid #ddd; }
+    td:first-child { color: #555; }
+  </style>
 </head>
 <body>
-  <p id="browser">Browser: unknown</p>
-  <p id="js">Javascript enabled: false</p>
-  <p id="ua">User Agent: unknown</p>
-  <p id="webdriver">Webdriver: unknown</p>
-  <p id="size_inner">Inner Size: unknown</p>
-  <p id="size_outer">Outer Size: unknown</p>
-  <p id="resolution">Screen Resolution: unknown</p>
-  <p id="orientation">Screen Orientation: unknown</p>
-  <p id="cores">Number of Cores: unknown</p>
-  <p id="touch">Touchscreen Enabled: unknown</p>
-  <p id="cookies">Cookies Enabled: unknown</p>
-  <p id="local_storage">Local Storage: unknown</p>
-  <p id="session_storage">Session Storage: unknown</p>
-  <p id="history">History Entries: unknown</p>
-  <p id="referrer">Referrer: unknown</p>
-  <p id="graphics">Graphics Card: unknown</p>
-  <p id="private">Private Browsing: unknown</p>
-
+<div>
+  <section>
+    <h2>Browser</h2>
+    <table><tbody>
+      <tr><td>Browser</td><td><strong id="browser">unknown</strong></td></tr>
+      <tr><td>User Agent</td><td><strong id="ua">unknown</strong></td></tr>
+      <tr><td>Platform</td><td><strong id="platform">unknown</strong></td></tr>
+      <tr><td>Vendor</td><td><strong id="vendor">unknown</strong></td></tr>
+      <tr><td>Language</td><td><strong id="language">unknown</strong></td></tr>
+      <tr><td>Timezone</td><td><strong id="timezone">unknown</strong></td></tr>
+      <tr><td>Locale</td><td><strong id="locale">unknown</strong></td></tr>
+      <tr><td>Javascript Enabled</td><td><strong id="js">false</strong></td></tr>
+      <tr><td>Webdriver</td><td><strong id="webdriver">unknown</strong></td></tr>
+      <tr><td>PDF Viewer Enabled</td><td><strong id="pdf_viewer">unknown</strong></td></tr>
+      <tr><td>Plugins</td><td><strong id="plugins">unknown</strong></td></tr>
+      <tr><td>MIME Types</td><td><strong id="mime_types">unknown</strong></td></tr>
+      <tr><td>window.chrome</td><td><strong id="window_chrome">unknown</strong></td></tr>
+      <tr><td>Private Browsing</td><td><strong id="private">unknown</strong></td></tr>
+      <tr><td>Do Not Track</td><td><strong id="dnt">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+<br>
+  <section>
+    <h2>Display</h2>
+    <table><tbody>
+      <tr><td>Inner Size</td><td><strong id="size_inner">unknown</strong></td></tr>
+      <tr><td>Outer Size</td><td><strong id="size_outer">unknown</strong></td></tr>
+      <tr><td>Screen Resolution</td><td><strong id="resolution">unknown</strong></td></tr>
+      <tr><td>Available Screen</td><td><strong id="avail_screen">unknown</strong></td></tr>
+      <tr><td>Screen Orientation</td><td><strong id="orientation">unknown</strong></td></tr>
+      <tr><td>Device Pixel Ratio</td><td><strong id="pixel_ratio">unknown</strong></td></tr>
+      <tr><td>Colour Depth</td><td><strong id="colour_depth">unknown</strong></td></tr>
+      <tr><td>Scroll Position</td><td><strong id="scroll">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Hardware</h2>
+    <table><tbody>
+      <tr><td>Number of Cores</td><td><strong id="cores">unknown</strong></td></tr>
+      <tr><td>Device Memory (GB)</td><td><strong id="memory">unknown</strong></td></tr>
+      <tr><td>Touchscreen Enabled</td><td><strong id="touch">unknown</strong></td></tr>
+      <tr><td>Graphics Card</td><td><strong id="graphics">unknown</strong></td></tr>
+      <tr><td>Battery Charging</td><td><strong id="battery_charging">unknown</strong></td></tr>
+      <tr><td>Battery Level</td><td><strong id="battery_level">unknown</strong></td></tr>
+      <tr><td>Bluetooth Available</td><td><strong id="bluetooth">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Storage &amp; Network</h2>
+    <table><tbody>
+      <tr><td>Cookies Enabled</td><td><strong id="cookies">unknown</strong></td></tr>
+      <tr><td>Cookie Writable</td><td><strong id="cookie_write">unknown</strong></td></tr>
+      <tr><td>Local Storage</td><td><strong id="local_storage">unknown</strong></td></tr>
+      <tr><td>Session Storage</td><td><strong id="session_storage">unknown</strong></td></tr>
+      <tr><td>Online</td><td><strong id="online">unknown</strong></td></tr>
+      <tr><td>Connection Type</td><td><strong id="connection">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Permissions</h2>
+    <table><tbody>
+      <tr><td>Notifications</td><td><strong id="perm_notifications">unknown</strong></td></tr>
+      <tr><td>Geolocation</td><td><strong id="perm_geolocation">unknown</strong></td></tr>
+      <tr><td>Camera</td><td><strong id="perm_camera">unknown</strong></td></tr>
+      <tr><td>Microphone</td><td><strong id="perm_microphone">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Security</h2>
+    <table><tbody>
+      <tr><td>crypto.randomUUID</td><td><strong id="crypto_uuid">unknown</strong></td></tr>
+      <tr><td>window.opener</td><td><strong id="opener">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Performance</h2>
+    <table><tbody>
+      <tr><td>Navigation Type</td><td><strong id="nav_type">unknown</strong></td></tr>
+      <tr><td>JS Heap Size Limit</td><td><strong id="heap_limit">unknown</strong></td></tr>
+      <tr><td>JS Heap Used</td><td><strong id="heap_used">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  <br>
+  <section>
+    <h2>Navigation</h2>
+    <table><tbody>
+      <tr><td>History Entries</td><td><strong id="history">unknown</strong></td></tr>
+      <tr><td>Referrer</td><td><strong id="referrer">unknown</strong></td></tr>
+      <tr><td>Current URL</td><td><strong id="url">unknown</strong></td></tr>
+    </tbody></table>
+  </section>
+  </div>
+  <br>
   <script>
-    const ua = navigator.userAgent;
-    const browser = navigator.userAgentData?.brands.map(b => b.brand).join(', ') ?? 'unknown';
+    const set = (id, val) => document.getElementById(id).textContent = val;
+    const mb = bytes => `${(bytes / 1048576).toFixed(1)} MB`;
+    const navTypes = ['navigate', 'reload', 'back_forward', 'prerender'];
 
-    document.getElementById('browser').textContent = `Browser: ${browser}`;
-    document.getElementById('js').textContent = 'Javascript enabled: true';
-    document.getElementById('ua').textContent = `User Agent: ${ua}`;
-    document.getElementById('webdriver').textContent = `Webdriver: ${navigator.webdriver}`;
-    document.getElementById('size_inner').textContent = `Inner Size: ${window.innerWidth}x${window.innerHeight}`;
-    document.getElementById('size_outer').textContent = `Outer Size: ${window.outerWidth}x${window.outerHeight}`;
-    document.getElementById('resolution').textContent = `Screen Resolution: ${screen.width}x${screen.height}`;
-    document.getElementById('orientation').textContent = `Screen Orientation: ${screen.orientation?.type ?? 'unknown'}`;
-    document.getElementById('cores').textContent = `Number of Cores: ${navigator.hardwareConcurrency}`;
-    document.getElementById('touch').textContent = `Touchscreen Enabled: ${navigator.maxTouchPoints > 0}`;
-    document.getElementById('cookies').textContent = `Cookies Enabled: ${navigator.cookieEnabled}`;
-    document.getElementById('history').textContent = `History Entries: ${history.length}`;
-    document.getElementById('referrer').textContent = `Referrer: ${document.referrer || 'none'}`;
+    // Browser
+    set('browser', navigator.userAgentData?.brands.map(b => b.brand).join(', ') ?? 'unknown');
+    set('ua', navigator.userAgent);
+    set('platform', navigator.userAgentData?.platform ?? navigator.platform ?? 'unknown');
+    set('vendor', navigator.vendor || 'none');
+    set('language', navigator.language);
+    set('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    set('locale', Intl.DateTimeFormat().resolvedOptions().locale);
+    set('js', 'true');
+    set('webdriver', navigator.webdriver);
+    set('pdf_viewer', navigator.pdfViewerEnabled ?? 'unknown');
+    set('plugins', navigator.plugins.length);
+    set('mime_types', navigator.mimeTypes.length);
+    set('window_chrome', 'chrome' in window ? 'present' : 'absent');
+    set('dnt', navigator.doNotTrack ?? 'unknown');
 
-    try { localStorage.getItem(''); document.getElementById('local_storage').textContent = 'Local Storage: true'; }
-    catch { document.getElementById('local_storage').textContent = 'Local Storage: false'; }
+    // Display
+    set('size_inner', `${window.innerWidth}x${window.innerHeight}`);
+    set('size_outer', `${window.outerWidth}x${window.outerHeight}`);
+    set('resolution', `${screen.width}x${screen.height}`);
+    set('avail_screen', `${screen.availWidth}x${screen.availHeight}`);
+    set('orientation', screen.orientation?.type ?? 'unknown');
+    set('pixel_ratio', window.devicePixelRatio);
+    set('colour_depth', `${screen.colorDepth}-bit`);
+    set('scroll', `${window.scrollX}x${window.scrollY}`);
 
-    try { sessionStorage.getItem(''); document.getElementById('session_storage').textContent = 'Session Storage: true'; }
-    catch { document.getElementById('session_storage').textContent = 'Session Storage: false'; }
+    // Hardware
+    set('cores', navigator.hardwareConcurrency);
+    set('memory', navigator.deviceMemory ?? 'unknown');
+    set('touch', navigator.maxTouchPoints > 0);
+    set('bluetooth', 'bluetooth' in navigator ? 'available' : 'unavailable');
 
     try {
       const gl = document.createElement('canvas').getContext('webgl');
       const ext = gl.getExtension('WEBGL_debug_renderer_info');
-      document.getElementById('graphics').textContent = `Graphics Card: ${ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'unavailable'}`;
-    } catch { document.getElementById('graphics').textContent = 'Graphics Card: unavailable'; }
+      set('graphics', ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'unavailable');
+    } catch { set('graphics', 'unavailable'); }
+
+    navigator.getBattery?.().then(b => {
+      set('battery_charging', b.charging);
+      set('battery_level', `${Math.round(b.level * 100)}%`);
+    }).catch(() => { set('battery_charging', 'unavailable'); set('battery_level', 'unavailable'); });
+
+    // Storage & Network
+    set('cookies', navigator.cookieEnabled);
+    try {
+      document.cookie = '_test=1';
+      set('cookie_write', document.cookie.includes('_test') ? 'true' : 'false');
+      document.cookie = '_test=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    } catch { set('cookie_write', 'false'); }
+
+    try { localStorage.getItem(''); set('local_storage', 'true'); }
+    catch { set('local_storage', 'false'); }
+
+    try { sessionStorage.getItem(''); set('session_storage', 'true'); }
+    catch { set('session_storage', 'false'); }
+
+    set('online', navigator.onLine);
+    set('connection', navigator.connection?.effectiveType ?? 'unknown');
+
+    // Permissions
+    const queryPerm = (name, id) =>
+      navigator.permissions?.query({ name }).then(r => set(id, r.state)).catch(() => set(id, 'unavailable'));
+    queryPerm('notifications', 'perm_notifications');
+    queryPerm('geolocation', 'perm_geolocation');
+    queryPerm('camera', 'perm_camera');
+    queryPerm('microphone', 'perm_microphone');
+
+    // Security
+    set('crypto_uuid', typeof crypto?.randomUUID === 'function' ? 'available' : 'unavailable');
+    set('opener', window.opener === null ? 'null' : 'set');
+
+    // Performance
+    const navEntry = performance.getEntriesByType('navigation')[0];
+    set('nav_type', navEntry?.type ?? navTypes[performance.navigation?.type] ?? 'unknown');
+    if (performance.memory) {
+      set('heap_limit', mb(performance.memory.jsHeapSizeLimit));
+      set('heap_used', mb(performance.memory.usedJSHeapSize));
+    } else {
+      set('heap_limit', 'unavailable'); set('heap_used', 'unavailable');
+    }
+
+    // Navigation
+    set('history', history.length);
+    set('referrer', document.referrer || 'none');
+    set('url', location.href);
+
+    // Private browsing heuristic
+    navigator.storage?.estimate?.().then(({ quota }) =>
+      set('private', quota < 120000000 ? 'likely' : 'unlikely')
+    ).catch(() => set('private', 'unknown'));
   </script>
 </body>
 </html>
