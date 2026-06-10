@@ -7,7 +7,7 @@ module DVLA
       OTHER_DRIVERS = %i[cuprite apparition].freeze
       PLAYWRIGHT_ACCEPTED_PARAMS = %i[headless browser_type proxy window_size].freeze
       PLAYWRIGHT_DRIVERS = %i[playwright_chromium playwright_firefox playwright_webkit].freeze
-      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size mobile_emulation].freeze
+      SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size emulate_device].freeze
       SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari].freeze
 
       # Creates methods in the Drivers module that matches the DRIVER_REGEX
@@ -128,10 +128,10 @@ module DVLA
           options.add_argument("--window-size=#{size[0]},#{size[1]}")
         end
 
-        if kwargs[:mobile_emulation] && %i[chrome edge].include?(browser)
-          puts 'Warning: window_size will be overridden by mobile_emulation' if kwargs[:window_size]
-          emulation = resolve_mobile_emulation(kwargs[:mobile_emulation])
-          puts "Mobile emulation: #{kwargs[:mobile_emulation]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
+        if kwargs[:emulate_device] && %i[chrome edge].include?(browser)
+          puts 'Warning: window_size will be overridden by emulate_device' if kwargs[:window_size]
+          emulation = resolve_emulate_device(kwargs[:emulate_device])
+          puts "Mobile emulation: #{kwargs[:emulate_device]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
           options.add_emulation(**emulation)
         end
 
@@ -187,20 +187,20 @@ module DVLA
       end
       private_class_method :parse_window_size
 
-      def self.resolve_mobile_emulation(mobile_emulation)
-        if mobile_emulation.is_a?(Symbol)
-          profile = MOBILE_PROFILES[mobile_emulation]
-          raise ArgumentError, "Unknown mobile profile: ':#{mobile_emulation}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless profile
+      def self.resolve_emulate_device(emulate_device)
+        if emulate_device.is_a?(Symbol)
+          profile = MOBILE_PROFILES[emulate_device]
+          raise ArgumentError, "Unknown mobile profile: ':#{emulate_device}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless profile
 
           {
             device_metrics: { width: profile[:width], height: profile[:height], pixelRatio: profile[:device_scale_factor], touch: profile[:has_touch] },
             user_agent: profile[:user_agent]
           }
         else
-          mobile_emulation.transform_keys(&:to_sym)
+          emulate_device.transform_keys(&:to_sym)
         end
       end
-      private_class_method :resolve_mobile_emulation
+      private_class_method :resolve_emulate_device
     end
   end
 end

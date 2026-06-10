@@ -38,9 +38,9 @@ namespace :browser do
     desc 'Launch Chrome (headless, no JS, proxied)'
     task(:headless_no_js_proxied) { dvla_browser_launch(:headless_selenium_chrome_no_js_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
     desc 'Launch Chrome with mobile emulation'
-    task(:emulated) { dvla_browser_launch(:selenium_chrome, mobile_emulation: DVLA_BROWSER_MOBILE_PROFILES.sample) }
+    task(:emulated) { dvla_browser_launch(:selenium_chrome, emulate_device: DVLA_BROWSER_MOBILE_PROFILES.sample) }
     desc 'Launch Chrome (headless) with mobile emulation'
-    task(:headless_emulated) { dvla_browser_launch(:headless_selenium_chrome, mobile_emulation: DVLA_BROWSER_MOBILE_PROFILES.sample) }
+    task(:headless_emulated) { dvla_browser_launch(:headless_selenium_chrome, emulate_device: DVLA_BROWSER_MOBILE_PROFILES.sample) }
     desc "Launch Chrome at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:window_size) { dvla_browser_launch(:selenium_chrome, window_size: DVLA_BROWSER_WINDOW_SIZE) }
     desc "Launch Chrome (headless) at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
@@ -94,9 +94,9 @@ namespace :browser do
     desc 'Launch Edge (headless, no JS, proxied)'
     task(:headless_no_js_proxied) { dvla_browser_launch(:headless_selenium_edge_no_js_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
     desc 'Launch Edge with mobile emulation'
-    task(:emulated) { dvla_browser_launch(:selenium_edge, mobile_emulation: DVLA_BROWSER_MOBILE_PROFILES.sample) }
+    task(:emulated) { dvla_browser_launch(:selenium_edge, emulate_device: DVLA_BROWSER_MOBILE_PROFILES.sample) }
     desc 'Launch Edge (headless) with mobile emulation'
-    task(:headless_emulated)    { dvla_browser_launch(:headless_selenium_edge, mobile_emulation: DVLA_BROWSER_MOBILE_PROFILES.sample) }
+    task(:headless_emulated)    { dvla_browser_launch(:headless_selenium_edge, emulate_device: DVLA_BROWSER_MOBILE_PROFILES.sample) }
     desc "Launch Edge at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:window_size)          { dvla_browser_launch(:selenium_edge, window_size: DVLA_BROWSER_WINDOW_SIZE) }
     desc "Launch Edge (headless) at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
