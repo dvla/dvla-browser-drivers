@@ -1,12 +1,10 @@
 module DVLA
   module Browser
     module Drivers
-      DRIVER_REGEX = /^(?<headless>headless_)?(?<driver>selenium_(?<browser>chrome|firefox|edge|safari)|cuprite|apparition|playwright_(?<pw_browser>chromium|firefox|webkit))(?<no_js>_no_js)?(?<proxied>_proxied)?$/
+      DRIVER_REGEX = /^(?:(?<headless>headless_)(?<driver>selenium_(?<browser>chrome|firefox|edge)|cuprite|apparition)(?<no_js>_no_js)?(?<proxied>_proxied)?|(?<driver_no_headless>selenium_(?<browser_no_headless>chrome|firefox|edge|safari)|cuprite|apparition)(?<no_js_no_headless>_no_js)?(?<proxied_no_headless>_proxied)?)$/
 
       OTHER_ACCEPTED_PARAMS = %i[timeout browser_options save_path remote proxy window_size].freeze
       OTHER_DRIVERS = %i[cuprite apparition].freeze
-      PLAYWRIGHT_ACCEPTED_PARAMS = %i[headless browser_type proxy window_size].freeze
-      PLAYWRIGHT_DRIVERS = %i[playwright_chromium playwright_firefox playwright_webkit].freeze
       SELENIUM_ACCEPTED_PARAMS = %i[remote additional_arguments additional_preferences binary proxy window_size emulate_device].freeze
       SELENIUM_DRIVERS = %i[selenium_chrome selenium_firefox selenium_edge selenium_safari].freeze
 
@@ -22,16 +20,17 @@ module DVLA
         matches = method.match(DRIVER_REGEX)
         return super unless matches
 
-        headless = !matches[:headless].nil?
-        no_js    = !matches[:no_js].nil?
-        driver   = matches[:driver].to_sym
+        headless = matches[:headless].is_a?(String)
+        no_js    = matches[:no_js].is_a?(String) || matches[:no_js_no_headless].is_a?(String)
+        proxied  = matches[:proxied].is_a?(String) || matches[:proxied_no_headless].is_a?(String)
+        driver   = matches[:driver]&.to_sym || matches[:driver_no_headless]&.to_sym
+        browser  = matches[:browser] || matches[:browser_no_headless]
 
-        raise ArgumentError, "Method '#{method}' requires proxy parameter" if matches[:proxied] && !kwargs[:proxy]
+        raise ArgumentError, "Method '#{method}' requires proxy parameter" if proxied && !kwargs[:proxy]
 
         case driver
-        when *SELENIUM_DRIVERS   then register_selenium_driver(method, matches[:browser].to_sym, headless:, no_js:, **kwargs)
-        when *PLAYWRIGHT_DRIVERS then register_playwright_driver(method, matches[:pw_browser].to_sym, headless:, **kwargs)
-        else                          register_other_driver(method, driver, headless:, no_js:, **kwargs)
+        when *SELENIUM_DRIVERS then register_selenium_driver(method, browser.to_sym, headless:, no_js:, **kwargs)
+        else                        register_other_driver(method, driver, headless:, no_js:, **kwargs)
         end
 
         puts "Driver set to: '#{method}'"
@@ -47,6 +46,7 @@ module DVLA
       def self.register_selenium_driver(method, browser, headless:, no_js:, **kwargs)
         warn_ignored_kwargs(kwargs, SELENIUM_ACCEPTED_PARAMS)
         puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && browser == :safari
+        puts 'Warning: window_size will be overridden by emulate_device' if kwargs[:window_size] && kwargs[:emulate_device]
 
         ::Capybara.register_driver method do |app|
           options        = build_selenium_options(browser, headless:, no_js:, **kwargs)
@@ -64,22 +64,6 @@ module DVLA
         end
       end
       private_class_method :register_selenium_driver
-
-      def self.register_playwright_driver(method, pw_browser, headless:, **kwargs)
-        warn_ignored_kwargs(kwargs, PLAYWRIGHT_ACCEPTED_PARAMS)
-        warn_if_playwright_browser_missing(pw_browser)
-
-        ::Capybara.register_driver method do |app|
-          opts = { browser_type: pw_browser, headless: }
-          opts[:proxy] = { server: kwargs[:proxy] } if kwargs[:proxy]
-          if kwargs[:window_size]
-            size = parse_window_size(kwargs[:window_size])
-            opts[:screen] = { width: size[0], height: size[1] }
-          end
-          Capybara::Playwright::Driver.new(app, **opts)
-        end
-      end
-      private_class_method :register_playwright_driver
 
       def self.register_other_driver(method, driver, headless:, no_js:, **kwargs)
         warn_ignored_kwargs(kwargs, OTHER_ACCEPTED_PARAMS)
@@ -99,15 +83,6 @@ module DVLA
         end
       end
       private_class_method :register_other_driver
-
-      def self.warn_if_playwright_browser_missing(browser_type)
-        cache_root = RUBY_PLATFORM.include?('darwin') ? '~/Library/Caches/ms-playwright' : '~/.cache/ms-playwright'
-        cache_root = File.expand_path(cache_root)
-        return if Dir.glob("#{cache_root}/#{browser_type}-*/").any? { |dir| Dir.exist?(dir) && !Dir.empty?(dir) }
-
-        puts "Warning: No Playwright '#{browser_type}' browser found in #{cache_root}. Run: npx playwright@<version> install #{browser_type}"
-      end
-      private_class_method :warn_if_playwright_browser_missing
 
       def self.build_selenium_options(browser, headless:, no_js:, **kwargs)
         return Selenium::WebDriver::Safari::Options.new if browser == :safari
@@ -129,9 +104,8 @@ module DVLA
         end
 
         if kwargs[:emulate_device] && %i[chrome edge].include?(browser)
-          puts 'Warning: window_size will be overridden by emulate_device' if kwargs[:window_size]
           emulation = resolve_emulate_device(kwargs[:emulate_device])
-          puts "Mobile emulation: #{kwargs[:emulate_device]} | #{emulation[:device_metrics].map { |k, v| "#{k}: #{v}" }.join(', ')}"
+          puts "Mobile emulation: #{kwargs[:emulate_device]} | #{emulation[:device_metrics]&.map { |k, v| "#{k}: #{v}" }&.join(', ')}" if emulation[:device_metrics]
           options.add_emulation(**emulation)
         end
 

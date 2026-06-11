@@ -165,49 +165,4 @@ namespace :browser do
     task(:headless_window_size) { dvla_browser_launch(:headless_apparition, window_size: DVLA_BROWSER_WINDOW_SIZE) }
   end
 
-  # ── Playwright ────────────────────────────────────────────────────────────────
-
-  namespace :playwright do
-    desc 'Launch Playwright Chromium'
-    task(chromium: 'browser:playwright:chromium:default')
-    desc 'Launch Playwright Firefox'
-    task(firefox: 'browser:playwright:firefox:default')
-    desc 'Launch Playwright WebKit'
-    task(webkit: 'browser:playwright:webkit:default')
-
-    namespace :chromium do
-      desc 'Launch Playwright Chromium'
-      task(:default)          { dvla_browser_launch(:playwright_chromium) }
-      desc 'Launch Playwright Chromium (headless)'
-      task(:headless)         { dvla_browser_launch(:headless_playwright_chromium) }
-      desc 'Launch Playwright Chromium (proxied)'
-      task(:proxied)          { dvla_browser_launch(:playwright_chromium_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-      desc 'Launch Playwright Chromium (headless, proxied)'
-      task(:headless_proxied) { dvla_browser_launch(:headless_playwright_chromium_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-      desc "Launch Playwright Chromium at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
-      task(:window_size)      { dvla_browser_launch(:playwright_chromium, window_size: DVLA_BROWSER_WINDOW_SIZE) }
-    end
-
-    namespace :firefox do
-      desc 'Launch Playwright Firefox'
-      task(:default)          { dvla_browser_launch(:playwright_firefox) }
-      desc 'Launch Playwright Firefox (headless)'
-      task(:headless)         { dvla_browser_launch(:headless_playwright_firefox) }
-      desc 'Launch Playwright Firefox (proxied)'
-      task(:proxied)          { dvla_browser_launch(:playwright_firefox_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-      desc 'Launch Playwright Firefox (headless, proxied)'
-      task(:headless_proxied) { dvla_browser_launch(:headless_playwright_firefox_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-    end
-
-    namespace :webkit do
-      desc 'Launch Playwright WebKit'
-      task(:default)          { dvla_browser_launch(:playwright_webkit) }
-      desc 'Launch Playwright WebKit (headless)'
-      task(:headless)         { dvla_browser_launch(:headless_playwright_webkit) }
-      desc 'Launch Playwright WebKit (proxied)'
-      task(:proxied)          { dvla_browser_launch(:playwright_webkit_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-      desc 'Launch Playwright WebKit (headless, proxied)'
-      task(:headless_proxied) { dvla_browser_launch(:headless_playwright_webkit_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-    end
-  end
 end
