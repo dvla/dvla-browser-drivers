@@ -125,6 +125,20 @@ RSpec.describe DVLA::Browser::Drivers do
       expect(browser_options[:'proxy-server']).to eq(proxy_url)
       expect(browser_options).to have_key(:'ignore-certificate-errors')
     end
+
+    it 'handles emulation' do
+      DVLA::Browser::Drivers.selenium_chrome(emulate_device: { 'deviceName' => 'iPhone 14 Pro' })
+      expect(Capybara.current_session.driver.options[:options].options[:emulation]).to eq({ deviceName: 'iPhone 14 Pro' })
+
+      DVLA::Browser::Drivers.selenium_edge(emulate_device: { 'deviceName' => 'iPhone 14 Pro' })
+      expect(Capybara.current_session.driver.options[:options].options[:emulation]).to eq({ deviceName: 'iPhone 14 Pro' })
+    end
+
+    it 'warns when both window_size and mobile_emulation are provided' do
+      expect do
+        DVLA::Browser::Drivers.selenium_chrome(emulate_device: { 'deviceName' => 'iPhone 14 Pro' }, window_size: [390, 844])
+      end.to output(/Warning: window_size will be overridden by emulate_device/).to_stdout
+    end
   end
 
   it 'throws a NoMethodError when the method does not match regex' do

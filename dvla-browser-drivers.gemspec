@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").select do |f|
       f.match(/\A(?:lib|bin|exe)/) ||
-        f.match(/.(?:gemspec|md|ruby-version)\Z/) ||
+        f.match(/.(?:gemspec|md|rake|ruby-version)\Z/) ||
         f.match(/\AGemfile\Z/)
     end
   end
