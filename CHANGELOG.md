@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ---
-## [3.2.0] - 2026-09-01
+## [3.2.0] - 2026-09-16
 
 ### Added
 - Builder pattern for Driver configuration. This is the new recommended way to configure the driver. 
