@@ -21,16 +21,51 @@ Or install it yourself as:
 
 ## Usage
 
+Select your driver, Selenium or Cuprite?
+
+```ruby
+selenium_builder = DVLA::Browser::Drivers.selenium_builder
+cuprite_builder = DVLA::Browser::Drivers.cuprite_builder
+```
+
+From there, configure it!
+
+| Option                       | Default          | Supported Drivers | Description                                                            |
+|------------------------------|------------------|-------------------|------------------------------------------------------------------------|
+| headless                     | true             | Selenium, Cuprite | Runs the browser in headless mode                                      |
+| headed                       | false            | Selenium, Cuprite | Runs the browser in headed mode                                        |
+| disable_javascript           | false            | Selenium, Cuprite | Disables JavaScript in the browser                                     |
+| enable_javascript            | true             | Selenium, Cuprite | Enables JavaScript in the browser                                      |
+| app_host(<String>)           | 'localhost:3000' | Selenium, Cuprite | The host of the application being tested                               |
+| proxy_host(<String>)         | nil              | Selenium, Cuprite | The host of the proxy being used                                       |
+| remote_host(<String>)        | nil              | Selenium, Cuprite | The host of the remote driver being used                               |
+| window_size(height:, width:) | nil              | Selenium, Cuprite | The size of the browser window                                         |
+| timeout                      | 60               | Selenium, Cuprite | The number of seconds the driver waits for a response from the browser |
+| browser_option(key, value)   | {}               | Selenium, Cuprite | Pass additional options to the browser                                 |
+|                              |                  |                   |                                                                        |
+| chrome                       | Yes              | Selenium          | Use the Chrome browser                                                 |
+| firefox                      | No               | Selenium          | Use the Firefox browser                                                |
+| edge                         | No               | Selenium          | Use the Edge browser                                                   |
+| safari                       | No               | Selenium          | Use the Safari browser                                                 |
+| browser_flags(*flags)        | []               | Selenium          | Pass additional flags to the browser                                   |
+| binary_path(<String>)        | nil              | Selenium          | The path to the browser binary                                         |
+| emulate_<device>             | nil              | Selenium          | Emulates a mobile device. See [Mobile emulation](#mobile-emulation)    |
+
+> **Note:** The previous approach of using `DVLA::Browser::Drivers.<driver>`
+> is now deprecated and will be removed in a future release.
+> Please use the builder pattern for driver configuration as shown above.
+
+---
 Once installed, you are able to use any pre-configured browser driver from the list below:
 
 ### Selenium drivers
 
-| Driver           | Usage                                         |
-|------------------|-----------------------------------------------|
-| selenium_chrome  | `DVLA::Browser::Drivers.selenium_chrome`      |
-| selenium_firefox | `DVLA::Browser::Drivers.selenium_firefox`     |
-| selenium_edge    | `DVLA::Browser::Drivers.selenium_edge`        |
-| selenium_safari  | `DVLA::Browser::Drivers.selenium_safari`      |
+| Driver           | Usage                                     |
+|------------------|-------------------------------------------|
+| selenium_chrome  | `DVLA::Browser::Drivers.selenium_chrome`  |
+| selenium_firefox | `DVLA::Browser::Drivers.selenium_firefox` |
+| selenium_edge    | `DVLA::Browser::Drivers.selenium_edge`    |
+| selenium_safari  | `DVLA::Browser::Drivers.selenium_safari`  |
 
 ### Non-selenium drivers
 
@@ -43,11 +78,11 @@ Once installed, you are able to use any pre-configured browser driver from the l
 
 The following modifiers can be applied to any driver above (except selenium_safari):
 
-| Modifier    | Example                                             | Description                                                                   |
-|-------------|-----------------------------------------------------|-------------------------------------------------------------------------------|
-| headless_   | `headless_selenium_chrome`                          | Runs the browser in headless mode                                             |
-| _no_js      | `selenium_chrome_no_js`                             | Disables JavaScript in the browser                                            |
-| _proxied    | `selenium_firefox_proxied(proxy: 'http://foo.bar')` | Routes traffic through a proxy, requires a url passed as the `proxy` argument |
+| Modifier  | Example                                             | Description                                                                   |
+|-----------|-----------------------------------------------------|-------------------------------------------------------------------------------|
+| headless_ | `headless_selenium_chrome`                          | Runs the browser in headless mode                                             |
+| _no_js    | `selenium_chrome_no_js`                             | Disables JavaScript in the browser                                            |
+| _proxied  | `selenium_firefox_proxied(proxy: 'http://foo.bar')` | Routes traffic through a proxy, requires a url passed as the `proxy` argument |
 
 Modifiers can be combined, e.g. `headless_selenium_firefox_no_js_proxied`
 
@@ -72,23 +107,24 @@ Modifiers can be combined, e.g. `headless_selenium_firefox_no_js_proxied`
 [Cuprite Documentation](https://www.rubydoc.info/gems/cuprite/)
 [Selenium Additional Preferences Documentation](https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_preference-instance_method)
 
-| Option                 | Driver                               | Usage                                                                                           | Description                                |
-|------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------|
-| remote                 | Selenium, Cuprite, Apparition        | `selenium_chrome(remote: 'http://localhost:4444/wd/hub')`                                       | Allows you to talk to a remote browser     |
-| additional_arguments   | Selenium                             | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver    |
-| additional_preferences | Selenium                             | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver  |
-| proxy                  | Selenium, Cuprite                    | `selenium_firefox_proxied(proxy: 'http://proxy:8080')`                                          | Sets the proxy URL for proxied drivers     |
-| window_size            | Chrome, Edge, Cuprite, Apparition    | `selenium_chrome(window_size: [1400, 900])`                                                     | Sets the browser window size. Accepts an array `[w, h]` or a string `'1400x900'`. Not supported on Firefox or Safari. Overridden by `emulate_device` |
-| emulate_device         | Chrome, Edge                         | `selenium_chrome(emulate_device: :iphone_15)`                                                   | Emulates a mobile device. Accepts a symbol matching a built-in profile (see [Mobile emulation](#mobile-emulation)) or a custom hash |
-| timeout                | Cuprite, Apparition                  | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver    |
-| save_path              | Cuprite, Apparition                  | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads |
-| browser_options        | Cuprite, Apparition                  | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser     |
+| Option                 | Driver                            | Usage                                                                                           | Description                                                                                                                                          |
+|------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| remote                 | Selenium, Cuprite, Apparition     | `selenium_chrome(remote: 'http://localhost:4444/wd/hub')`                                       | Allows you to talk to a remote browser                                                                                                               |
+| additional_arguments   | Selenium                          | `selenium_chrome(additional_arguments: ['window-size=1400,1920'] `                              | Pass additional arguments to the driver                                                                                                              |
+| additional_preferences | Selenium                          | `selenium_chrome(additional_preferences: [{'download.default_directory': '<download_path>'}] )` | Pass additional preferences to the driver                                                                                                            |
+| proxy                  | Selenium, Cuprite                 | `selenium_firefox_proxied(proxy: 'http://proxy:8080')`                                          | Sets the proxy URL for proxied drivers                                                                                                               |
+| window_size            | Chrome, Edge, Cuprite, Apparition | `selenium_chrome(window_size: [1400, 900])`                                                     | Sets the browser window size. Accepts an array `[w, h]` or a string `'1400x900'`. Not supported on Firefox or Safari. Overridden by `emulate_device` |
+| emulate_device         | Chrome, Edge                      | `selenium_chrome(emulate_device: :iphone_15)`                                                   | Emulates a mobile device. Accepts a symbol matching a built-in profile (see [Mobile emulation](#mobile-emulation)) or a custom hash                  |
+| timeout                | Cuprite, Apparition               | `cuprite(timeout: 60 )`                                                                         | Sets the default timeout for the driver                                                                                                              |
+| save_path              | Cuprite, Apparition               | `cuprite(save_path: 'File.expand_path('./somewhere')' )`                                        | Tells the browser where to store downloads                                                                                                           |
+| browser_options        | Cuprite, Apparition               | `cuprite(browser_options: { option: value, option: value })`                                    | Pass additional options to the browser                                                                                                               |
 
 ---
 
 ### Mobile emulation
 
-The `emulate_device` option sets device metrics (width, height, pixel ratio, touch) and the user agent string via Chrome's emulation API.
+The `emulate_device` option sets device metrics (width, height, pixel ratio, touch) and the user agent string via
+Chrome's emulation API.
 
 Pass a symbol to match one of the built-in profiles from `DVLA::Browser::Drivers::MOBILE_PROFILES`:
 
@@ -98,7 +134,8 @@ DVLA::Browser::Drivers.headless_selenium_chrome(emulate_device: :ipad_pro)
 DVLA::Browser::Drivers.selenium_chrome(emulate_device: :galaxy_s9_plus_landscape)
 ```
 
-Or pass a custom hash using [Chrome emulation keys](https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_emulation-instance_method):
+Or pass a custom hash
+using [Chrome emulation keys](https://www.selenium.dev/selenium/docs/api/rb/Selenium/WebDriver/Chromium/Options.html#add_emulation-instance_method):
 
 ```ruby
 DVLA::Browser::Drivers.selenium_chrome(
@@ -111,13 +148,13 @@ DVLA::Browser::Drivers.selenium_chrome(
 
 Available built-in profile symbols follow the naming pattern `<device_name>` or `<device_name>_landscape`, e.g.:
 
-| Symbol | Dimensions |
-|--------|------------|
-| `:iphone_15` | 393×659 |
-| `:iphone_15_landscape` | 734×343 |
-| `:ipad_pro` | 1024×1366 |
-| `:pixel_5` | 393×851 |
-| `:galaxy_s9_plus` | 320×658 |
+| Symbol                 | Dimensions |
+|------------------------|------------|
+| `:iphone_15`           | 393×659    |
+| `:iphone_15_landscape` | 734×343    |
+| `:ipad_pro`            | 1024×1366  |
+| `:pixel_5`             | 393×851    |
+| `:galaxy_s9_plus`      | 320×658    |
 
 See `lib/dvla/browser/drivers/mobile_profiles.rb` for the full list.
 
@@ -125,17 +162,17 @@ See `lib/dvla/browser/drivers/mobile_profiles.rb` for the full list.
 
 ### BiDi Support
 
-BiDi (Bidirectional Protocol) is enabled by default on all Selenium drivers (Chrome, Firefox, Edge). This allows bidirectional communication between the driver and browser.
-It is still in active development so breaking changes are expected. Check the documentation for the latest implementation guides:
+BiDi (Bidirectional Protocol) is enabled by default on all Selenium drivers (Chrome, Firefox, Edge). This allows
+bidirectional communication between the driver and browser. It is still in active development so breaking changes are
+expected. Check the documentation for the latest implementation guides:
 
 * [Selenium docs](https://www.selenium.dev/documentation/webdriver/bidi/)
 * [W3C specification](https://w3c.github.io/webdriver-bidi/)
 
-
 ## Rake Tasks
 
-The gem ships with a set of rake tasks to quickly launch any driver against a URL for manual inspection.
-Add the following to your `Rakefile` to make them available:
+The gem ships with a set of rake tasks to quickly launch any driver against a URL for manual inspection. Add the
+following to your `Rakefile` to make them available:
 
 ```ruby
 require 'dvla/browser/drivers/tasks'
@@ -154,12 +191,12 @@ bundle exec rake browser:cuprite:headless
 
 The following environment variables can be used to configure the tasks:
 
-| Variable              | Default                  | Description                                    |
-|-----------------------|--------------------------|------------------------------------------------|
-| `BROWSER_URL`         | `http://localhost:3000`  | URL the browser will open                      |
-| `PROXY_URL`           | `http://localhost:8080`  | Proxy URL for `proxied` tasks                  |
-| `BROWSER_OPEN_TIME`   | `10`                     | Seconds to hold the browser open               |
-| `BROWSER_WINDOW_SIZE` | `1337x800`               | Window size for `window_size` tasks            |
+| Variable              | Default                 | Description                         |
+|-----------------------|-------------------------|-------------------------------------|
+| `BROWSER_URL`         | `http://localhost:3000` | URL the browser will open           |
+| `PROXY_URL`           | `http://localhost:8080` | Proxy URL for `proxied` tasks       |
+| `BROWSER_OPEN_TIME`   | `10`                    | Seconds to hold the browser open    |
+| `BROWSER_WINDOW_SIZE` | `1337x800`              | Window size for `window_size` tasks |
 
 ---
 

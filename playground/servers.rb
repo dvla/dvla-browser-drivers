@@ -36,7 +36,7 @@ class HerodotusAccessLog
 end
 
 def build_logger(name, colour)
-  config = Struct.new(*DVLA::Herodotus::CONFIG_ATTRIBUTES, keyword_init: true).new(
+  config = Struct.new(*DVLA::Herodotus::Config::LOGGER_ATTRIBUTES, keyword_init: true).new(
     prefix_colour: { system: [colour, 'bold'], level: [colour, 'bold'], date: %w[white], time: %w[white] },
   )
   DVLA::Herodotus.logger(name, config: config)

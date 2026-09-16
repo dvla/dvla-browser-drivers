@@ -138,31 +138,4 @@ namespace :browser do
     desc "Launch Cuprite (headless) at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:headless_window_size) { dvla_browser_launch(:headless_cuprite, window_size: DVLA_BROWSER_WINDOW_SIZE) }
   end
-
-  # ── Apparition ────────────────────────────────────────────────────────────────
-
-  desc 'Launch Apparition'
-  task(apparition: 'browser:apparition:default')
-
-  namespace :apparition do
-    desc 'Launch Apparition'
-    task(:default) { dvla_browser_launch(:apparition) }
-    desc 'Launch Apparition (headless)'
-    task(:headless)             { dvla_browser_launch(:headless_apparition) }
-    desc 'Launch Apparition (no JS)'
-    task(:no_js)                { dvla_browser_launch(:apparition_no_js) }
-    desc 'Launch Apparition (headless, no JS)'
-    task(:headless_no_js) { dvla_browser_launch(:headless_apparition_no_js) }
-    desc 'Launch Apparition (proxied)'
-    task(:proxied) { dvla_browser_launch(:apparition_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-    desc 'Launch Apparition (headless, proxied)'
-    task(:headless_proxied) { dvla_browser_launch(:headless_apparition_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-    desc 'Launch Apparition (headless, no JS, proxied)'
-    task(:headless_no_js_proxied) { dvla_browser_launch(:headless_apparition_no_js_proxied, proxy: DVLA_BROWSER_PROXY_URL) }
-    desc "Launch Apparition at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
-    task(:window_size) { dvla_browser_launch(:apparition, window_size: DVLA_BROWSER_WINDOW_SIZE) }
-    desc "Launch Apparition (headless) at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
-    task(:headless_window_size) { dvla_browser_launch(:headless_apparition, window_size: DVLA_BROWSER_WINDOW_SIZE) }
-  end
-
 end

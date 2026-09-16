@@ -7,11 +7,10 @@ gemspec
 
 gem "ostruct", "~> 0.6.3"
 gem 'bundler-audit', '~> 0.9.3'
+gem 'dvla-herodotus', '~> 2.4'
 gem 'dvla-lint', '~> 1.7'
-gem 'pry', '~> 0.14'
+gem 'irb', '~> 1.18'
 gem 'rake', '~> 13.3'
 gem 'rspec', '~> 3.13'
 gem 'simplecov', '~> 0.22'
 gem 'simplecov-console', '~> 0.9'
-
-gem "irb", "~> 1.18"

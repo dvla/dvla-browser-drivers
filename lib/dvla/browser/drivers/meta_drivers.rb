@@ -33,6 +33,8 @@ module DVLA
         else                        register_other_driver(method, driver, headless:, no_js:, **kwargs)
         end
 
+        Kernel.warn "[DEPRECATION] '#{method}' is deprecated and will be removed in a future version. Please use the Builder classes instead."
+
         puts "Driver set to: '#{method}'"
         ::Capybara.javascript_driver = method
         ::Capybara.default_driver    = method
@@ -78,7 +80,7 @@ module DVLA
 
         ::Capybara.register_driver method do |app|
           opts = { headless:, timeout: kwargs[:timeout] || 60, browser_options:, save_path: kwargs[:save_path], url: kwargs[:remote] }
-          opts[:screen_size] = parse_window_size(kwargs[:window_size]) if kwargs[:window_size]
+          opts[:window_size] = parse_window_size(kwargs[:window_size]) if kwargs[:window_size]
           Object.const_get("Capybara::#{driver.to_s.capitalize}::Driver").new(app, **opts)
         end
       end
