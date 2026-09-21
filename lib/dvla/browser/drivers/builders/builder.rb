@@ -18,6 +18,7 @@ module DVLA
           populate_from_!(config)
 
           @driver ||= nil
+          @browser ||= nil
 
           @app_host ||= 'localhost:3000'
 

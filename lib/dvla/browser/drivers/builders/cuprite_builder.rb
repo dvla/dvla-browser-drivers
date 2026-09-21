@@ -33,6 +33,7 @@ module DVLA
 
             ::Capybara::Cuprite::Driver.new(app, **opts)
           end
+          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}" }
 
           super
         end

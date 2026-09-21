@@ -29,6 +29,16 @@ module DVLA
           SeleniumBuilder.new(config)
         end
       end
+
+      def self.logger
+        @logger ||= if defined?(LOG) && LOG.respond_to?(:spawn_child_logger)
+                      LOG.spawn_child_logger(system_name: 'Browser Drivers')
+                    else
+                      DVLA::Herodotus.logger('Browser Drivers')
+                    end
+        @logger.level = defined?(LOG) ? LOG.level : log_level
+        @logger
+      end
     end
   end
 end

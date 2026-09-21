@@ -10,7 +10,7 @@ module DVLA
           add_browser_flag('--disable-dev-shm-usage')
 
           @driver = :selenium
-          @browser = :chrome
+          @browser = :chrome if @browser.nil?
 
           @binary_path ||= nil
           @emulate_device ||= nil
@@ -63,6 +63,7 @@ module DVLA
               end
             end
           end
+          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_flags + @browser_options}" }
 
           super(driver_name)
         end
