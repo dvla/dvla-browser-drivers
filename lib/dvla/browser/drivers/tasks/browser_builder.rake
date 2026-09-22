@@ -40,13 +40,13 @@ namespace :browser_builder do
     task(:headless_disable_js) { build_and_launch_browser(builder.headless.disable_javascript) }
 
     desc 'Launch Chrome (proxied)'
-    task(:proxied) { build_and_launch_browser(builder.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:proxied) { build_and_launch_browser(builder.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Chrome (headless, proxied)'
-    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Chrome (headless, no JS, proxied)'
-    task(:headless_disable_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_disable_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc "Launch Chrome at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:window_size) { build_and_launch_browser(builder.window_size(height: 1337, width: 800)) }
@@ -82,13 +82,13 @@ namespace :browser_builder do
     task(:headless_no_js) { build_and_launch_browser(builder.headless.disable_javascript) }
 
     desc 'Launch Firefox (proxied)'
-    task(:proxied) { build_and_launch_browser(builder.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:proxied) { build_and_launch_browser(builder.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Firefox (headless, proxied)'
-    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Firefox (headless, no JS, proxied)'
-    task(:headless_no_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_no_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc "Launch Firefox at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:window_size) { build_and_launch_browser(builder.window_size(height: 1337, width: 800)) }
@@ -118,13 +118,13 @@ namespace :browser_builder do
     task(:headless_no_js) { build_and_launch_browser(builder.headless.disable_javascript) }
 
     desc 'Launch Edge (proxied)'
-    task(:proxied) { build_and_launch_browser(builder.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:proxied) { build_and_launch_browser(builder.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Edge (headless, proxied)'
-    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Edge (headless, no JS, proxied)'
-    task(:headless_no_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_no_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Edge with mobile emulation'
     task(:emulated) { build_and_launch_browser(builder.emulate_device(DVLA_BROWSER_MOBILE_PROFILES.sample)) }
@@ -172,13 +172,13 @@ namespace :browser_builder do
     task(:headless_disable_js) { build_and_launch_browser(builder.headless.disable_javascript) }
 
     desc 'Launch Cuprite (proxied)'
-    task(:proxied) { build_and_launch_browser(builder.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:proxied) { build_and_launch_browser(builder.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Cuprite (headless, proxied)'
-    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_proxied) { build_and_launch_browser(builder.headless.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc 'Launch Cuprite (headless, no JS, proxied)'
-    task(:headless_disable_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_host(DVLA_BROWSER_PROXY_URL)) }
+    task(:headless_disable_js_proxied) { build_and_launch_browser(builder.headless.disable_javascript.proxy_url(DVLA_BROWSER_PROXY_URL)) }
 
     desc "Launch Cuprite at window size #{ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800')}"
     task(:window_size) { build_and_launch_browser(builder.window_size(height: 1337, width: 800)) }

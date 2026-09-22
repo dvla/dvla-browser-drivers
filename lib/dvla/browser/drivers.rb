@@ -36,7 +36,7 @@ module DVLA
                     else
                       DVLA::Herodotus.logger('Browser Drivers')
                     end
-        @logger.level = defined?(LOG) ? LOG.level : log_level
+        @logger.level = defined?(LOG) ? LOG.level : 0
         @logger
       end
     end

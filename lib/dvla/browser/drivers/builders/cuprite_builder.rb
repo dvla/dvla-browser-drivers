@@ -17,8 +17,8 @@ module DVLA
         def build!
           add_browser_option('blink-settings', 'scriptEnabled=false') if @javascript_disabled
 
-          if @proxy_host
-            add_browser_option('proxy-server', @proxy_host)
+          if @proxy_url
+            add_browser_option('proxy-server', @proxy_url)
             add_browser_option('ignore-certificate-errors', nil)
           end
 
@@ -33,7 +33,7 @@ module DVLA
 
             ::Capybara::Cuprite::Driver.new(app, **opts)
           end
-          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}" }
+          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}, proxy: #{@proxy_url}" }
 
           super
         end

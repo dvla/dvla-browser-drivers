@@ -5,7 +5,7 @@ module DVLA
       class Builder
         class DriverNotImplementedError < StandardError; end
 
-        CONFIG_KEYS = %i[driver browser headless javascript_disabled app_host remote_host proxy_host binary_path
+        CONFIG_KEYS = %i[driver browser headless javascript_disabled app_host remote_host proxy_url binary_path
                          emulate_device save_path window_size timeout].freeze
         DRIVERS = %i[cuprite selenium].freeze
 
@@ -26,7 +26,7 @@ module DVLA
           @javascript_disabled = false unless instance_variable_defined?(:'@javascript_disabled')
 
           @remote_host ||= nil
-          @proxy_host ||= nil
+          @proxy_url ||= nil
 
           @save_path ||= nil
           @window_size ||= nil
@@ -61,8 +61,8 @@ module DVLA
           self
         end
 
-        def proxy_host(url)
-          @proxy_host = url
+        def proxy_url(url)
+          @proxy_url = url
           self
         end
 

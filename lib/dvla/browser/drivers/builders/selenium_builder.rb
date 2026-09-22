@@ -63,7 +63,7 @@ module DVLA
               end
             end
           end
-          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_flags + @browser_options}" }
+          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_flags + @browser_options}, proxy: #{@proxy_url}" }
 
           super(driver_name)
         end
@@ -92,10 +92,10 @@ module DVLA
         end
 
         def apply_selenium_proxy_options!
-          return unless @proxy_host
+          return unless @proxy_url
 
           if @browser == :firefox
-            proxy_uri = URI.parse(@proxy_host)
+            proxy_uri = URI.parse(@proxy_url)
             proxy_host = proxy_uri.host == '0.0.0.0' ? '127.0.0.1' : proxy_uri.host
 
             add_browser_option('network.proxy.type', 1)
@@ -104,11 +104,8 @@ module DVLA
             add_browser_option('network.proxy.ssl', proxy_host)
             add_browser_option('network.proxy.ssl_port', proxy_uri.port)
             add_browser_option('network.proxy.no_proxies_on', '')
-            add_browser_option('security.cert_pinning.enforcement_level', 0)
-            add_browser_option('security.enterprise_roots.enabled', true)
           else
-            add_browser_flag("--proxy-server=#{@proxy_host}")
-            add_browser_flag('--ignore-certificate-errors')
+            add_browser_flag("--proxy-server=#{@proxy_url}")
           end
         end
 
@@ -138,6 +135,7 @@ module DVLA
           add_browser_flag("--window-size=#{@window_size[0]},#{@window_size[1]}") if @window_size && supports_window_size_via_options?
 
           apply_selenium_proxy_options!
+          options.accept_insecure_certs = true if @proxy_url
 
           options.add_emulation(**@emulate_device) if @emulate_device && supports_device_emulation?
 
