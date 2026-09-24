@@ -2,6 +2,7 @@ require_relative 'drivers/builders/builder'
 require_relative 'drivers/builders/cuprite_builder'
 require_relative 'drivers/builders/selenium_builder'
 
+require_relative 'drivers/configuration'
 require_relative 'drivers/mobile_profiles'
 require_relative 'drivers/meta_drivers'
 require_relative 'drivers/version'
@@ -30,14 +31,12 @@ module DVLA
         end
       end
 
+      def self.config
+        @config ||= Configuration.new
+      end
+
       def self.logger
-        @logger ||= if defined?(LOG) && LOG.respond_to?(:spawn_child_logger)
-                      LOG.spawn_child_logger(system_name: 'Browser Drivers')
-                    else
-                      DVLA::Herodotus.logger('Browser Drivers')
-                    end
-        @logger.level = defined?(LOG) ? LOG.level : 0
-        @logger
+        @logger ||= config.logger
       end
     end
   end

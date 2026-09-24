@@ -170,7 +170,7 @@ module DVLA
 
           {
             device_metrics: { width: profile[:width], height: profile[:height], pixelRatio: profile[:device_scale_factor], touch: profile[:has_touch] },
-            user_agent: profile[:user_agent]
+            user_agent: profile[:user_agent],
           }
         else
           emulate_device.transform_keys(&:to_sym)

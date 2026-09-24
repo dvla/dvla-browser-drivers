@@ -22,8 +22,8 @@ module DVLA
 
           @app_host ||= 'localhost:3000'
 
-          @headless = true unless instance_variable_defined?(:'@headless')
-          @javascript_disabled = false unless instance_variable_defined?(:'@javascript_disabled')
+          @headless = true unless instance_variable_defined?(:@headless)
+          @javascript_disabled = false unless instance_variable_defined?(:@javascript_disabled)
 
           @remote_host ||= nil
           @proxy_url ||= nil
@@ -101,7 +101,7 @@ module DVLA
         end
 
         def build!(driver_name = @driver)
-          raise DriverNotImplementedError, "Use a specific builder class" unless driver_name
+          raise DriverNotImplementedError, 'Use a specific builder class' unless driver_name
 
           ::Capybara.app_host = @app_host
           ::Capybara.javascript_driver = driver_name
@@ -109,7 +109,7 @@ module DVLA
           ::Capybara.current_driver = driver_name
         end
 
-        private
+      private
 
         # TODO - Collect errors, raise all at once
         def validate_!(config)
@@ -122,7 +122,7 @@ module DVLA
             case key
             when :driver
               unless config.key?(:driver)
-                errors << "Config must include a :driver key"
+                errors << 'Config must include a :driver key'
                 next
               end
 

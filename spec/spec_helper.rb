@@ -12,7 +12,7 @@ SimpleCov.start do
 end
 
 require 'dvla/browser/drivers'
-require 'pry'
+require 'dvla/herodotus'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

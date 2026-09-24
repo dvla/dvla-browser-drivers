@@ -526,7 +526,7 @@ module DVLA
         pixel_5_landscape: {
           user_agent: 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
           width: 851, height: 393, device_scale_factor: 3, mobile: true, has_touch: true
-        }
+        },
       }.freeze
     end
   end
