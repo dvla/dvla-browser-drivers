@@ -66,6 +66,7 @@ module DVLA
           self
         end
 
+        # TODO: check if cuprite supports
         def remote_host(url)
           @remote_host = url
           self
@@ -86,6 +87,7 @@ module DVLA
           self
         end
 
+        # TODO: cuprite ignores this, raise a warning or only implement in selenium builder?
         def add_browser_flag(*flags)
           flags.each do |flag|
             flag.prepend('--') unless flag.start_with?('--')

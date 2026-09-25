@@ -41,11 +41,12 @@ module DVLA
           self
         end
 
+        # TODO: rename to register!
         def build!
           # puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && browser == :safari
           # puts 'Warning: window_size will be overridden by emulate_device' if kwargs[:window_size] && kwargs[:emulate_device]
 
-          ::Capybara.register_driver driver_name do |app|
+          ::Capybara.register_driver(driver_name) do |app|
             browser = @remote_host.nil? ? @browser : :remote
 
             driver_options = { browser:,

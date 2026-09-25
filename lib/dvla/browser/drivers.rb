@@ -14,6 +14,10 @@ require 'selenium-webdriver'
 module DVLA
   module Browser
     module Drivers
+      # DVLA::Browser::Drivers.register_driver_from_config('settings.yml')
+      #
+      # DVLA::Browser::Drivers.cuprite.headless.register!
+
       def self.cuprite_builder(config = nil)
         CupriteBuilder.new(config)
       end
@@ -22,6 +26,7 @@ module DVLA
         SeleniumBuilder.new(config)
       end
 
+      # TODO: Use as method for building from config,
       def self.builder(driver, config: nil)
         case driver.to_s.downcase.to_sym
         when :cuprite

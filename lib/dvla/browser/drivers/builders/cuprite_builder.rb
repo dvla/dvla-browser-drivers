@@ -14,6 +14,7 @@ module DVLA
           @timeout = 60
         end
 
+        # TODO: rename to register!
         def build!
           add_browser_option('blink-settings', 'scriptEnabled=false') if @javascript_disabled
 
@@ -21,6 +22,8 @@ module DVLA
             add_browser_option('proxy-server', @proxy_url)
             add_browser_option('ignore-certificate-errors', nil)
           end
+
+          DVLA::Browser::Drivers.logger.warn { 'Browser flags are ignored' } if @browser_flags
 
           ::Capybara.register_driver :cuprite do |app|
             opts = { headless: @headless,
@@ -33,7 +36,7 @@ module DVLA
 
             ::Capybara::Cuprite::Driver.new(app, **opts)
           end
-          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}, proxy: #{@proxy_url}" }
+          DVLA::Browser::Drivers.logger.info { "Driver registered - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}, proxy: #{@proxy_url}" }
 
           super
         end
