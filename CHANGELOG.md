@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 ```ruby
 builder = DVLA::Browser::Drivers.cuprite_builder
 
-builder.headed.disable_javascript.build!
+builder.headed.disable_javascript.register!
 ```
 
 - Deprecation warning to meta_driver methods.

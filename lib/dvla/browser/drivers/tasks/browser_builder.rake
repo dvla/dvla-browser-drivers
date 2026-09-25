@@ -8,7 +8,7 @@ DVLA_BROWSER_WINDOW_SIZE = ENV.fetch('BROWSER_WINDOW_SIZE', '1337x800').then { |
 DVLA_BROWSER_MOBILE_PROFILES = DVLA::Browser::Drivers::MOBILE_PROFILES.keys
 
 def build_and_launch_browser(builder)
-  driver_name = builder.build!
+  driver_name = builder.register!
 
   session = Capybara::Session.new(driver_name)
   session.visit(DVLA_BROWSER_URL)

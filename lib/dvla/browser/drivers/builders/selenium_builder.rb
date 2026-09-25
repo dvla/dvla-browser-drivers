@@ -5,8 +5,6 @@ module DVLA
         def initialize(config = nil)
           super
 
-          define_emulation_profile_methods!
-
           add_browser_flag('--disable-dev-shm-usage')
 
           @driver = :selenium
@@ -69,16 +67,17 @@ module DVLA
           super(driver_name)
         end
 
-      private
-
-        def define_emulation_profile_methods!
-          MOBILE_PROFILES.each do |name, profile|
-            define_singleton_method("emulate_#{name}") do
-              @emulate_device = profile
-              self
-            end
+        def emulate(device = MOBILE_PROFILES.sample)
+          if MOBILE_PROFILES.include?(device)
+            DVLA::Browser::Drivers.logger.info { "Emulating device: #{device}" }
+            @emulate_device = MOBILE_PROFILES[device]
+            self
+          else
+            raise ArgumentError, "Unknown mobile profile: '#{device}'"
           end
         end
+
+      private
 
         def driver_name
           :"selenium_#{@browser}"

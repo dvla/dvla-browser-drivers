@@ -14,13 +14,11 @@ module DVLA
         end
 
         def logger
-          @logger ||= if Object.const_defined?(:LOG) && LOG.respond_to?(:spawn_child_logger)
-                        LOG.spawn_child_logger(system_name: 'Browser Drivers')
-                      else
-                        Logger.new($stdout)
-                      end
-          @logger.level = Object.const_defined?(:LOG) ? LOG.level : 0
-          @logger
+          if @logger
+            @logger
+          else
+            @logger = Logger.new($stdout)
+          end
         end
       end
     end

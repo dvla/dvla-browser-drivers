@@ -14,6 +14,7 @@ module DVLA
         BROWSERS = (SELENIUM_BROWSERS + CUPRITE_BROWSERS).uniq.freeze
 
         def initialize(config = nil)
+          # TODO does this need to happen if we split up the selenium class?
           validate_!(config)
           populate_from_!(config)
 
@@ -102,7 +103,7 @@ module DVLA
           self
         end
 
-        def build!(driver_name = @driver)
+        def register!(driver_name = @driver)
           raise DriverNotImplementedError, 'Use a specific builder class' unless driver_name
 
           ::Capybara.app_host = @app_host

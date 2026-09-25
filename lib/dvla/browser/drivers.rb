@@ -27,12 +27,18 @@ module DVLA
       end
 
       # TODO: Use as method for building from config,
-      def self.builder(driver, config: nil)
-        case driver.to_s.downcase.to_sym
+      def self.register_from_config!(config: nil)
+        raise unless config.is_a? Hash
+
+        driver = config[:driver].to_sym
+        case driver
         when :cuprite
-          CupriteBuilder.new(config)
+          CupriteBuilder.new(config).register!
+        when :selenium
+          # Or :selenium_firefox, :selenium_chrome?
+          SeleniumBuilder.new(config).register!
         else
-          SeleniumBuilder.new(config)
+          raise "Unknown driver #{driver}"
         end
       end
 

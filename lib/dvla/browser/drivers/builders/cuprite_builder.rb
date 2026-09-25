@@ -15,7 +15,7 @@ module DVLA
         end
 
         # TODO: rename to register!
-        def build!
+        def register!
           add_browser_option('blink-settings', 'scriptEnabled=false') if @javascript_disabled
 
           if @proxy_url

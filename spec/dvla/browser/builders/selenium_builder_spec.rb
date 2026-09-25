@@ -7,25 +7,25 @@ RSpec.describe DVLA::Browser::Drivers::SeleniumBuilder do
   end
 
   it 'registers a selenium_chrome driver' do
-    selenium_driver = subject.new.build!
+    selenium_driver = subject.new.register!
     expect(selenium_driver).to eq(:selenium_chrome)
     expect(Capybara.current_driver).to eq(:selenium_chrome)
   end
 
   it 'registers a selenium_firefox driver' do
-    selenium_driver = subject.new(driver: :selenium, browser: :firefox).build!
+    selenium_driver = subject.new(driver: :selenium, browser: :firefox).register!
     expect(selenium_driver).to eq(:selenium_firefox)
     expect(Capybara.current_driver).to eq(:selenium_firefox)
   end
 
   it 'registers a selenium_edge driver' do
-    selenium_driver = subject.new(driver: :selenium, browser: :edge).build!
+    selenium_driver = subject.new(driver: :selenium, browser: :edge).register!
     expect(selenium_driver).to eq(:selenium_edge)
     expect(Capybara.current_driver).to eq(:selenium_edge)
   end
 
   it 'registers a selenium_safari driver' do
-    selenium_driver = subject.new(driver: :selenium, browser: :safari).build!
+    selenium_driver = subject.new(driver: :selenium, browser: :safari).register!
     expect(selenium_driver).to eq(:selenium_safari)
     expect(Capybara.current_driver).to eq(:selenium_safari)
   end
@@ -52,11 +52,11 @@ RSpec.describe DVLA::Browser::Drivers::SeleniumBuilder do
     end
 
     it 'raises an error if an invalid browser option is called' do
-      expect { DVLA::Browser::Drivers.selenium_builder.ie.build! }.to raise_error(NoMethodError)
+      expect { DVLA::Browser::Drivers.selenium_builder.ie.register! }.to raise_error(NoMethodError)
     end
 
     it "doesn't support browser_flags" do
-      expect { DVLA::Browser::Drivers.cuprite_builder.add_browser_flag('my flag').build! }.to raise_error(NoMethodError)
+      expect { DVLA::Browser::Drivers.cuprite_builder.add_browser_flag('my flag').register! }.to raise_error(NoMethodError)
     end
 
     it 'supports binary_path when browser is chrome' do
@@ -81,7 +81,7 @@ RSpec.describe DVLA::Browser::Drivers::SeleniumBuilder do
     # end
 
     it 'supports emulating devices' do
-      DVLA::Browser::Drivers.selenium_builder.emulate_pixel_5.build!
+      DVLA::Browser::Drivers.selenium_builder.emulate_pixel_5.register!
       expect(Capybara.current_session.driver.options[:options].emulation[:user_agent]).to match(/Pixel 5/)
     end
   end
