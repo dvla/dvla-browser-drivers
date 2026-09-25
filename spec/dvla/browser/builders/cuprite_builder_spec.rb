@@ -28,6 +28,16 @@ RSpec.describe DVLA::Browser::Drivers::CupriteBuilder do
       expect(Capybara.current_session.driver.options[:browser_options]['blink-settings']).to eq('scriptEnabled=false')
     end
 
+    it 'registers a driver with a remote host' do
+      DVLA::Browser::Drivers.cuprite_builder.remote_host('example.com').register!
+      expect(Capybara.current_session.driver.options[:url]).to eq('example.com')
+    end
+
+    it 'registers a driver with a proxy url' do
+      DVLA::Browser::Drivers.cuprite_builder.proxy_url('proxy.com').register!
+      expect(Capybara.current_session.driver.options[:browser_options]['proxy-server']).to eq('proxy.com')
+    end
+
     it 'will override options if they contradict' do
       DVLA::Browser::Drivers.cuprite_builder.headless.headed.register!
       expect(Capybara.current_session.driver.options[:headless]).to eq(false)

@@ -26,11 +26,10 @@ module DVLA
         SeleniumBuilder.new(config)
       end
 
-      # TODO: Use as method for building from config,
       def self.register_from_config!(config: nil)
-        raise unless config.is_a? Hash
+        raise ArgumentError unless config.is_a?(Hash)
 
-        driver = config[:driver].to_sym
+        driver = config[:driver].to_s.downcase.to_sym
         case driver
         when :cuprite
           CupriteBuilder.new(config).register!

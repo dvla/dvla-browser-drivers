@@ -2,7 +2,6 @@ module DVLA
   module Browser
     module Drivers
       class Configuration
-        # TODO: Should we have a setting for log level?
         # Set a custom logger
         # @param new_logger [Logger]
         def logger=(new_logger)
@@ -14,11 +13,7 @@ module DVLA
         end
 
         def logger
-          if @logger
-            @logger
-          else
-            @logger = Logger.new($stdout)
-          end
+          @logger || (@logger = Logger.new($stdout))
         end
       end
     end

@@ -67,7 +67,6 @@ module DVLA
           self
         end
 
-        # TODO: check if cuprite supports
         def remote_host(url)
           @remote_host = url
           self

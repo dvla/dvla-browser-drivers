@@ -14,7 +14,6 @@ module DVLA
           @timeout = 60
         end
 
-        # TODO: rename to register!
         def register!
           add_browser_option('blink-settings', 'scriptEnabled=false') if @javascript_disabled
 
@@ -36,7 +35,7 @@ module DVLA
 
             ::Capybara::Cuprite::Driver.new(app, **opts)
           end
-          DVLA::Browser::Drivers.logger.info { "Driver registered - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}, proxy: #{@proxy_url}" }
+          DVLA::Browser::Drivers.logger.info { "Driver registered - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_options}#{", proxy: #{@proxy_url}" if @proxy_url}#{", remote_host: #{@remote_host}" if @remote_host}" }
 
           super
         end

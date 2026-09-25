@@ -2,6 +2,9 @@ module DVLA
   module Browser
     module Drivers
       class SeleniumBuilder < Builder
+        # TODO: Split out the class into subclasses so don't need this?
+        class BrowserNotSupportedError < StandardError; end
+
         def initialize(config = nil)
           super
 
@@ -39,8 +42,7 @@ module DVLA
           self
         end
 
-        # TODO: rename to register!
-        def build!
+        def register!
           # puts "Warning: window_size is not supported for #{browser}" if kwargs[:window_size] && browser == :safari
           # puts 'Warning: window_size will be overridden by emulate_device' if kwargs[:window_size] && kwargs[:emulate_device]
 
@@ -62,18 +64,24 @@ module DVLA
               end
             end
           end
-          DVLA::Browser::Drivers.logger.info { "Driver built - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_flags + @browser_options}, proxy: #{@proxy_url}" }
+          DVLA::Browser::Drivers.logger.info { "Driver registered - driver: #{@driver}, browser: #{@browser}, headless: #{@headless}, javascript disabled: #{@javascript_disabled}, browser options: #{@browser_flags + @browser_options}#{", proxy: #{@proxy_url}" if @proxy_url}#{", remote_host: #{@remote_host}" if @remote_host}" }
 
           super(driver_name)
         end
 
         def emulate(device = MOBILE_PROFILES.sample)
+          raise BrowserNotSupportedError unless supports_device_emulation?
+
           if MOBILE_PROFILES.include?(device)
+            profile = MOBILE_PROFILES[device]
             DVLA::Browser::Drivers.logger.info { "Emulating device: #{device}" }
-            @emulate_device = MOBILE_PROFILES[device]
+            @emulate_device = {
+              device_metrics: { width: profile[:width], height: profile[:height], pixelRatio: profile[:device_scale_factor], touch: profile[:has_touch] },
+              user_agent: profile[:user_agent],
+            }
             self
           else
-            raise ArgumentError, "Unknown mobile profile: '#{device}'"
+            raise ArgumentError, "Unknown mobile profile: '#{device}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}"
           end
         end
 
@@ -109,22 +117,11 @@ module DVLA
           end
         end
 
-        def self.resolve_emulate_device(emulate_device)
-          if emulate_device.is_a?(Symbol)
-            profile = MOBILE_PROFILES[emulate_device]
-            raise ArgumentError, "Unknown mobile profile: ':#{emulate_device}'. Available: #{MOBILE_PROFILES.keys.map { |k| ":#{k}" }.join(', ')}" unless profile
-
-            {
-              device_metrics: { width: profile[:width], height: profile[:height], pixelRatio: profile[:device_scale_factor], touch: profile[:has_touch] },
-              user_agent: profile[:user_agent],
-            }
-          else
-            emulate_device.transform_keys(&:to_sym)
-          end
-        end
-
         def build_selenium_options
-          return Selenium::WebDriver::Safari::Options.new if @browser == :safari
+          if @browser == :safari
+            DVLA::Browser::Drivers.logger.warn { 'Option is not supported by safari' } if @binary_path || @headless || @emulate_device || @proxy_url || @window_size || @javascript_disabled
+            return Selenium::WebDriver::Safari::Options.new
+          end
 
           options = Object.const_get("Selenium::WebDriver::#{@browser.to_s.capitalize}::Options")
                           .new(web_socket_url: true) # web_socket_url is for BIDI support

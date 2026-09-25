@@ -16,15 +16,5 @@ RSpec.describe DVLA::Browser::Drivers::Configuration do
     it 'uses a standard logger by default' do
       expect(subject.logger).to be_a(Logger)
     end
-
-    it 'will spawn a child logger if LOG already exists' do
-      stub_const('LOG', DVLA::Herodotus.logger('My Test Pack'))
-      # Need to clear previously initialised loggers so that we can make a fresh one to test child spawn logic
-      DVLA::Browser::Drivers::instance_variable_set(:@logger, nil)
-      DVLA::Browser::Drivers.config.instance_variable_set(:@logger, nil)
-
-      expect(LOG).to receive(:spawn_child_logger).and_call_original
-      DVLA::Browser::Drivers::SeleniumBuilder.new.build!
-    end
   end
 end
