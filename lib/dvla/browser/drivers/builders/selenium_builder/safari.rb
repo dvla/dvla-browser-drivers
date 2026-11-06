@@ -1,8 +1,8 @@
 module DVLA
   module Browser
     module Drivers
-      class SeleniumBuilder
-        class Safari < SeleniumBuilder
+
+      class Safari < SeleniumBuilder
           SUPPORTED_OPTIONS = %i[app_host remote_host timeout].freeze
           UNSUPPORTED_OPTIONS = ALL_OPTIONS - SUPPORTED_OPTIONS.freeze
 
@@ -23,7 +23,7 @@ module DVLA
             Selenium::WebDriver::Safari::Options.new
           end
         end
-      end
+
     end
   end
 end

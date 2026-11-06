@@ -1,7 +1,6 @@
 module DVLA
   module Browser
     module Drivers
-      class SeleniumBuilder
         class Chrome < SeleniumBuilder
           def initialize(config = nil)
             super
@@ -31,7 +30,6 @@ module DVLA
             options.add_preference('profile.managed_default_content_settings.javascript', 2) if @javascript_disabled
           end
         end
-      end
     end
   end
 end

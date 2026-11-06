@@ -1,8 +1,7 @@
 module DVLA
   module Browser
     module Drivers
-      class SeleniumBuilder
-        class Firefox < SeleniumBuilder
+      class Firefox < SeleniumBuilder
           def initialize(config = nil)
             super
             @browser = :firefox
@@ -38,7 +37,6 @@ module DVLA
             options.add_preference('javascript.enabled', false) if @javascript_disabled
           end
         end
-      end
     end
   end
 end

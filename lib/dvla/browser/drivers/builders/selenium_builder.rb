@@ -12,7 +12,7 @@ module DVLA
         def self.new(config = nil)
           browser = config.is_a?(Hash) ? config[:browser]&.to_sym : nil
 
-          if browser && BROWSER_SUBCLASSES.key?(browser) && self == SeleniumBuilder
+          if browser && BROWSER_SUBCLASSES.key?(browser) && self.superclass == SeleniumBuilder
             subclass = const_get(BROWSER_SUBCLASSES[browser])
             return subclass.new(config)
           end

@@ -1,6 +1,10 @@
 require_relative 'drivers/builders/builder'
 require_relative 'drivers/builders/cuprite_builder'
 require_relative 'drivers/builders/selenium_builder'
+require_relative 'drivers/builders/selenium_builder/chrome'
+require_relative 'drivers/builders/selenium_builder/firefox'
+require_relative 'drivers/builders/selenium_builder/edge'
+require_relative 'drivers/builders/selenium_builder/safari'
 
 require_relative 'drivers/configuration'
 require_relative 'drivers/mobile_profiles'
